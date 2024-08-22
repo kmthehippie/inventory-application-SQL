@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%=title%></title>
+  </head>
+  <body>
+    <div class="sidebar"><%- include('sidebar.ejs') %></div>
+    <div class="main">
+      <h1><%=title%></h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Product Name</th>
+            <th>Product ID</th>
+            <th>Quantity In</th>
+            <th>Current Quantity</th>
+            <th>Transactions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (const productid in productInventory) { %> <% const product =
+          productInventory[productid]; %>
+          <tr>
+            <td><%= product.name %></td>
+            <td><%= product.productid %></td>
+            <td><%= product.quantityin %></td>
+            <td><%= product.currentQuantity %></td>
+            <td>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Transaction ID</th>
+                    <th>Transaction Type</th>
+                    <th>Quantity</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for (const transaction of product.transactions) { %>
+                  <tr>
+                    <td><%= transaction.transactionid %></td>
+                    <td><%= transaction.transactiontype %></td>
+                    <td><%= transaction.quantity %></td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('header') %>
+  <body>
+    <div class="sidebar"><%- include('sidebar.ejs') %></div>
+    <div class="main">
+      <h1><%=title%></h1>
+      <a href="/sales/create">Create New Sale</a>
+      <table>
+        <thead>
+          <tr>
+            <th>Sale ID</th>
+            <th>Sale Date</th>
+            <th>Total Amount</th>
+            <th>Payment Method</th>
+            <th>Sale Items</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (const saleid in salesData) { %> <% const sale =
+          salesData[saleid]; %>
+          <tr>
+            <td><%= sale.saleid %></td>
+            <td><%= sale.saledate %></td>
+            <td><%= sale.totalamount %></td>
+            <td><%= sale.paymentmethod %></td>
+            <td>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Price per Unit</th>
+                    <th>Quantity Sold</th>
+                    <th>Total Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% for (const item of sale.saleItems) { %>
+                  <tr>
+                    <td><%= item.name %></td>
+                    <td><%= item.pricePerUnit %></td>
+                    <td><%= item.quantity %></td>
+                    <td><%= item.totalPrice %></td>
+                  </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

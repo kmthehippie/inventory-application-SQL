@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div>
+      <div>
+        <div class="sidebar"><%- include('sidebar.ejs') %></div>
+
+        <div class="main">
+          <h1>Dashboard</h1>
+          <p>
+            Welcome to <em>Fruit Inventory</em>, a very basic Express website
+            developed by km.
+          </p>
+          <h1>Counter:</h1>
+          <p>The current fruits in stock are as follows:</p>
+
+          <p>We have fruits from all over the world! Just to name a few...</p>
+          <ul>
+            <%countries.forEach(function(country){ %>
+            <li><a href="/<%=country.country %>"><%=country.country %></a></li>
+            <%})%>
+          </ul>
+          <p>Products In Stock</p>
+          <ul>
+            <%products.forEach(function(prod){ %>
+            <li>
+              <p>Debug: productid = <%=prod.productid%></p>
+              <a href="/product/<%=prod.productid%>"
+                ><h3><%=prod.name %> <small><%=prod.size%></small></h3></a
+              >
+              <p><%= prod.description%></p>
+            </li>
+            <%})%>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

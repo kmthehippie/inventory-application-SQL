@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('header') %>
+  <body>
+    <div class="sidebar"><%- include('sidebar.ejs') %></div>
+    <div class="main">
+      <h1><%=title%> <small><%=data.size%></small></h1>
+      <img src="<%=data.imageurl%>" alt="<%=data.name%>" />
+      <p>Batch: <%=data.batchid%> Date: <%=data.datein%></p>
+      <p><%=data.description%></p>
+      <p class="hidden">MSRP: <%=data.msrp%></p>
+      <p>
+        Stock In: <%=data.quantityin%> Current Quantity:
+        <%=data.currentquantity%>
+      </p>
+      <p>From <%=data.country%></p>
+    </div>
+  </body>
+</html>

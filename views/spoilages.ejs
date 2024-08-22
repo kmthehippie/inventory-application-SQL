@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('header') %>
+  <body>
+    <div class="sidebar"><%- include('sidebar.ejs') %></div>
+    <div class="main">
+      <h1><%=title%></h1>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Quantity Spoilt</th>
+            <th>Cost per Unit</th>
+            <th>Total Cost</th>
+            <th>Spoilage Date</th>
+            <th>Product Name</th>
+            <th>Size</th>
+            <th>Quantity In</th>
+            <th>Current Quantity</th>
+            <th>Spoilage Image</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (const spoilage of spoilageData) { %>
+          <tr>
+            <td><%= spoilage.spoilageid %></td>
+            <td><%= spoilage.quantityspoilt %></td>
+            <td><%= spoilage.costperunit %></td>
+            <td><%= spoilage.totalcost %></td>
+            <td><%= spoilage.spoilagedate %></td>
+            <td><%= spoilage.name %></td>
+            <td><%= spoilage.size %></td>
+            <td><%= spoilage.quantityin %></td>
+            <td><%= spoilage.currentquantity %></td>
+            <td>
+              <img src="<%=spoilage.imageurl%>" alt="<%=spoilage.imageurl%>" />
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
