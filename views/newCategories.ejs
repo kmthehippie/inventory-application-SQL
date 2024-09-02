@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('header') %>
+  <body>
+    <!-- <div class="sidebar"><%- include('sidebar.ejs') %></div> -->
+    <div class="main">
+      <h2>New Category</h2>
+      <form id="categoryForm" action="/categories/create" method="POST">
+        <div id="newCategory">
+          <div class="new-category">
+            <label for="category">Category: </label>
+            <input type="text" id="category" />
+          </div>
+          <button type="submit">Submit New Category</button>
+        </div>
+      </form>
+      <div id="errorMessage" style="color: red"></div>
+    </div>
+    <script>
+      document
+        .getElementById("categoryForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const categoryValue = document
+            .getElementById("category")
+            .value.trim();
+          if (!categoryValue) return;
+
+          const category = { category: categoryValue };
+
+          fetch("/categories/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(category),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.error) {
+                throw new Error(data.error);
+              }
+              console.log("Category created: ", data);
+              document.getElementById("category").value = "";
+              document.getElementById("errorMessage").textContent = "";
+              alert("Category added successfully!");
+            })
+            .catch((err) => {
+              console.error("Error creating category: ", err);
+              document.getElementById("errorMessage").textContent =
+                err.message || "An error occurred while creating the category";
+            });
+        });
+    </script>
+  </body>
+</html>

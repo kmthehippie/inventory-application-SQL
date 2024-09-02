@@ -12,6 +12,7 @@ exports.GetSales = asyncHandler(async (req, res, next) => {
       saleid,
       saledate,
       totalamount,
+      status,
       paymentmethod,
       quantitysold,
       priceperunit,
@@ -24,6 +25,7 @@ exports.GetSales = asyncHandler(async (req, res, next) => {
         saleid,
         saledate,
         totalamount,
+        status,
         paymentmethod,
         saleItems: [],
       };
@@ -39,8 +41,26 @@ exports.GetSales = asyncHandler(async (req, res, next) => {
   res.render("sales", { title: "Sales", salesData });
 });
 
-exports.CreateSales = asyncHandler(async (req, res, next) => {
+exports.CreateSalesGet = asyncHandler(async (req, res, next) => {
+  const products = await db.getProductsAndBatches();
   res.render("newSales", {
     title: "Create a new sale",
+    data: products,
   });
 });
+
+exports.CreateSalesPost = [
+  body("paymentMethod").trim().escape(),
+
+  asyncHandler(async (req, res, next) => {
+    const error = validationResult(req);
+
+    const saleData = req.body;
+    try {
+      const newSale = await db.createSale(saleData);
+      res.json(newSale);
+    } catch (error) {
+      next(error);
+    }
+  }),
+];

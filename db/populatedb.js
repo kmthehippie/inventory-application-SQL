@@ -7,17 +7,17 @@ CHECK (VALUE ~* '^[A-Za-z0-9.%+-]+@[A-Za-z0-9.%+-]+\\.[A-Za-z]{2,}$');
 
 CREATE TABLE IF NOT EXISTS categories (
 categoryID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-category VARCHAR (255)
+category VARCHAR (255) UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS countries (
 countryID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-country VARCHAR (255)
+country VARCHAR (255) UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS suppliers (
 supplierID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-name VARCHAR(255) NOT NULL,
+name VARCHAR(255) NOT NULL UNIQUE,
 email email NOT NULL, 
 number VARCHAR(20)
 );
@@ -30,54 +30,55 @@ description VARCHAR(1000),
 categoryID INTEGER REFERENCES categories(categoryID),
 countryID INTEGER REFERENCES countries (countryID),
 supplierID INTEGER REFERENCES suppliers (supplierID),
-status VARCHAR(20) CHECK (status IN ('IN_STOCK', 'SOLD_OUT', 'DISCONTINUED')) DEFAULT 'IN_STOCK'
+status VARCHAR(20) CHECK (status IN ('IN_STOCK', 'SOLD_OUT', 'DISCONTINUED', 'COMING SOON')) DEFAULT 'IN_STOCK'
 );
 
 CREATE TABLE IF NOT EXISTS productBatches (
-batchID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-productID INTEGER REFERENCES products(productID),
-cost NUMERIC(10,2) NOT NULL CHECK (cost >= 0),
-msrp NUMERIC(10,2) NOT NULL CHECK (msrp >= 0),
-quantityIn INTEGER NOT NULL CHECK (quantityIn > 0),
-currentQuantity INTEGER NOT NULL CHECK (currentQuantity >= 0),
-dateIn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-imageURL VARCHAR(255),
-status VARCHAR(20) CHECK (status IN('ACTIVE', 'DEPLETED')) DEFAULT 'ACTIVE',
-CONSTRAINT check_quantity CHECK (currentQuantity <= quantityIn)
+  batchID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  productID INTEGER REFERENCES products(productID),
+  cost NUMERIC(10,2) NOT NULL CHECK (cost >= 0),
+  msrp NUMERIC(10,2) NOT NULL CHECK (msrp >= 0),
+  quantityIn INTEGER NOT NULL CHECK (quantityIn > 0),
+  currentQuantity INTEGER NOT NULL CHECK (currentQuantity >= 0),
+  dateIn TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  imageURL VARCHAR(255)[],
+  status VARCHAR(20) CHECK (status IN('ACTIVE', 'DEPLETED')) DEFAULT 'ACTIVE',
+  CONSTRAINT check_quantity CHECK (currentQuantity <= quantityIn)
 );
 
 CREATE TABLE inventoryTransactions (
 transactionID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-transactionType VARCHAR(10) NOT NULL CHECK (transactionType IN ('IN', 'SOLD', 'SPOILT')),
+transactionType VARCHAR(10) NOT NULL CHECK (transactionType IN ('IN', 'SOLD', 'SPOILT', 'RETURNED', 'CANCELLED')),
 batchID INTEGER REFERENCES productBatches(batchID),
 quantity INTEGER NOT NULL CHECK (quantity > 0),
 transactionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE sales (
-saleID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-saleDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-totalAmount NUMERIC (10,2) DEFAULT 0,
-paymentMethod VARCHAR(50) CHECK (paymentMethod IN('CASH', 'CARD', 'BANK_TRANSFER', 'DIGITAL_WALLET')) NOT NULL
+  saleID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  saleDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  totalAmount NUMERIC(10, 2) DEFAULT 0,
+  paymentMethod VARCHAR(50) CHECK (paymentMethod IN ('CASH', 'CARD', 'BANK_TRANSFER', 'DIGITAL_WALLET')) NOT NULL,
+  status VARCHAR(20) CHECK (status IN ('COMPLETED', 'PENDING', 'REFUNDED', 'CANCELLED')) DEFAULT 'COMPLETED'
 );
-
 CREATE TABLE saleItems (
 saleItemID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 saleID INTEGER REFERENCES sales(saleID),
 batchID INTEGER REFERENCES productBatches(batchID),
 quantitySold INTEGER NOT NULL CHECK (quantitySold > 0),
 pricePerUnit NUMERIC (10,2) NOT NULL CHECK (pricePerUnit >= 0),
+status VARCHAR(20) CHECK (status IN ('COMPLETED', 'PENDING', 'REFUNDED', 'CANCELLED')) DEFAULT 'COMPLETED',
 totalPrice NUMERIC (10,2) GENERATED ALWAYS AS (quantitySold * pricePerUnit) STORED
 );
 
 CREATE TABLE spoilages (
- spoilageID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
- batchID INTEGER REFERENCES productBatches(batchID),
- quantitySpoilt INTEGER NOT NULL CHECK (quantitySpoilt > 0),
- costPerUnit NUMERIC (10,2),
- totalCost NUMERIC (10,2),
- imageURL VARCHAR(255),
- spoilageDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  spoilageID INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+  batchID INTEGER REFERENCES productBatches(batchID),
+  quantitySpoilt INTEGER NOT NULL CHECK (quantitySpoilt > 0),
+  costPerUnit NUMERIC(10, 2),
+  totalCost NUMERIC(10, 2),
+  imageURL VARCHAR(255),
+  spoilageDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE VIEW inventories AS
@@ -93,7 +94,6 @@ GROUP BY
     p.productID, p.name;
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_suppliers_email ON suppliers (email);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_product_batches_product_id ON productBatches (productID);
 
 CREATE VIEW category_products AS
 SELECT
@@ -107,15 +107,15 @@ SELECT
     p.supplierID,
     p.status
 FROM
-    products p
-JOIN
-    categories c ON p.categoryID = c.categoryID;
+    categories c
+LEFT JOIN
+    products p ON p.categoryID = c.categoryID;
 `;
 
 const SQL_INSERT_DATA = `
 -- Insert categories
 INSERT INTO categories (category) VALUES
-('Apple'), ('Orange'), ('Grape'), ('Peach'), ('Banana');
+('Apple'), ('Orange'), ('Grape'), ('Peach'), ('Banana'), ('Kiwi');
 
 -- Insert countries
 INSERT INTO countries (country) VALUES
@@ -133,19 +133,20 @@ INSERT INTO suppliers (name, email, number) VALUES
 INSERT INTO products (name, description, size, categoryID, countryID, supplierID, status) VALUES
 ('Envy Red Apple', 'Crunchy, crispy, sweet and tangy apples from New Zealand. The best apple in the world for eating!', '120s', 1, 1, 1, 'IN_STOCK'),
 ('Navel Orange', 'Juicy and seedless oranges perfect for snacking or juicing.', '88s', 2, 2, 2, 'IN_STOCK'),
-('Green Kiwi', 'Fuzzy-skinned, sweet-tart kiwifruit packed with vitamin C.', '36s', 5, 1, 3, 'IN_STOCK'),
+('Green Kiwi', 'Fuzzy-skinned, sweet-tart kiwifruit packed with vitamin C.', '36s', 6, 1, 3, 'IN_STOCK'),
 ('Cavendish Banana', 'Creamy, sweet bananas ideal for snacking or baking.', '40 lbs', 5, 5, 4, 'IN_STOCK'),
 ('Red Globe Grape', 'Large, seeded red grapes with a sweet flavor.', '18 lbs', 3, 2, 5, 'IN_STOCK'),
-('Rockit Mini Red Apple', 'Mini sized crisp apples that originate from NZ. These apples are sweet and fit just right into any bento box.', '24s', 1,1,1, 'IN_STOCK');
+('Rockit Mini Red Apple', 'Mini sized crisp apples that originate from NZ. These apples are sweet and fit just right into any bento box.', '24s', 1,1,1, 'IN_STOCK'),
+('Sweet Globe Green Grapes', 'Crispy sweet green grapes originating from the US of A. These grapes have a great bite feel whilst retaining its juiciness. It is sweet with a very low tart profile. Delicious!', '20 kg', 3,2,5, 'IN_STOCK');
 
 -- Insert product batches
 INSERT INTO productBatches (productID, cost, msrp, quantityIn, currentQuantity, imageURL) VALUES
-(1, 45.00, 89.99, 100, 95, 'http://example.com/envy_apple.jpg'),
-(2, 35.00, 69.99, 150, 140, 'http://example.com/navel_orange.jpg'),
-(3, 40.00, 79.99, 200, 190, 'http://example.com/green_kiwi.jpg'),
-(4, 25.00, 49.99, 80, 74, 'http://example.com/cavendish_banana.jpg'),
-(5, 30.00, 59.99, 50, 48, 'http://example.com/red_globe_grape.jpg'),
-(6, 120.00, 148.99, 24, 23, 'http://example.com/rockit_apple.jpg');
+(1, 45.00, 89.99, 100, 95, ARRAY['http://example.com/envy_apple.jpg']),
+(2, 35.00, 69.99, 150, 140, ARRAY['http://example.com/navel_orange.jpg']),
+(3, 40.00, 79.99, 200, 190, ARRAY['http://example.com/green_kiwi.jpg']),
+(4, 25.00, 49.99, 80, 74, ARRAY['http://example.com/cavendish_banana.jpg']),
+(5, 30.00, 59.99, 50, 48, ARRAY['http://example.com/red_globe_grape.jpg']),
+(6, 120.00, 148.99, 24, 23, ARRAY['http://example.com/rockit_apple.jpg']);
 
 
 -- Insert sales with total amounts and payment methods
@@ -197,28 +198,18 @@ const SQL_TRIGGER = `
 CREATE OR REPLACE FUNCTION update_product_status()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Update the status when the inventory reaches 0
-    IF (SELECT SUM(currentQuantity) FROM productBatches WHERE productID = NEW.productID) = 0 THEN
-        UPDATE products
-        SET status = 'SOLD_OUT'
-        WHERE productID = NEW.productID;
-    END IF;
-
-    -- Update the status to 'DISCONTINUED' if the product is discontinued
-    IF NEW.status = 'DISCONTINUED' THEN
-        UPDATE products
-        SET status = 'DISCONTINUED'
-        WHERE productID = NEW.productID;
-    END IF;
-
-    RETURN NEW;
+  IF (SELECT COALESCE(SUM(currentQuantity), 0) FROM productBatches WHERE productID = NEW.productID) = 0 THEN
+    UPDATE products
+    SET status = 'SOLD_OUT'
+    WHERE productID = NEW.productID;
+  ELSE
+    UPDATE products
+    SET status = 'IN_STOCK'
+    WHERE productID = NEW.productID;
+  END IF;
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-
-CREATE TRIGGER update_product_status_trigger
-AFTER INSERT OR UPDATE ON inventoryTransactions
-FOR EACH ROW
-EXECUTE FUNCTION update_product_status();
 `;
 
 const main = async () => {

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('header') %>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .button {
+      padding: 5px 10px;
+      text-decoration: none;
+      display: inline-block;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-right: 5px;
+    }
+    .delete {
+      background-color: #f44336;
+    }
+    .edit-mode input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+  </style>
+  <body>
+    <%- include("sidebar.ejs") %>
+    <div class="main">
+      <h1><%=title%></h1>
+      <table id="supplierTable">
+        <thead>
+          <tr>
+            <th>Supplier ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Number</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% suppliers.forEach(function(supplier) { %>
+          <tr data-id="<%= supplier.supplierid %>">
+            <td><%= supplier.supplierid %></td>
+            <td>
+              <span class="display-mode name"><%= supplier.name %></span
+              ><input
+                type="text"
+                class="edit-mode"
+                value="<%= supplier.name %>"
+                style="display: none"
+              />
+            </td>
+            <td>
+              <span class="display-mode email"><%= supplier.email %></span
+              ><input
+                type="email"
+                class="edit-mode"
+                value="<%= supplier.email %>"
+                style="display: none"
+              />
+            </td>
+            <td>
+              <span class="display-mode number"><%= supplier.number %></span
+              ><input
+                type="tel"
+                class="edit-mode"
+                value="<%= supplier.number %>"
+                style="display: none"
+              />
+            </td>
+            <td>
+              <button class="button update-btn">Update</button>
+              <button class="button delete">Delete</button>
+              <button class="button save-btn" style="display: none">
+                Save
+              </button>
+              <button class="button cancel-btn" style="display: none">
+                Cancel
+              </button>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <script>
+      const updateData = async (data) => {
+        try {
+          const response = await fetch(`/suppliers/update/${data.supplierid}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+          const resData = await response.json();
+        } catch (error) {
+          console.error("Error Updating Data: ", error);
+        }
+      };
+      const deleteData = async (id) => {
+        try {
+          const response = await fetch(`/suppliers/delete/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const resData = await response.json();
+        } catch (err) {
+          console.error("Error Deleting Data: ", error);
+        }
+      };
+
+      document
+        .getElementById("supplierTable")
+        .addEventListener("click", function (e) {
+          const row = e.target.closest("tr");
+          if (!row) return;
+
+          if (e.target.classList.contains("update-btn")) {
+            row.classList.add("edit-mode");
+            row
+              .querySelectorAll(".display-mode")
+              .forEach((el) => (el.style.display = "none"));
+            row
+              .querySelectorAll(".edit-mode")
+              .forEach((el) => (el.style.display = "inline-block"));
+            row.querySelector(".update-btn").style.display = "none";
+            row.querySelector(".delete").style.display = "none";
+            row.querySelector(".save-btn").style.display = "inline-block";
+            row.querySelector(".cancel-btn").style.display = "inline-block";
+          } else if (e.target.classList.contains("save-btn")) {
+            const data = {
+              supplierid: row.dataset.id,
+              name: row.querySelector('.edit-mode[type="text"]').value,
+              email: row.querySelector('.edit-mode[type="email"]').value,
+              number: row.querySelector('.edit-mode[type="tel"]').value,
+            };
+            row.querySelectorAll(".edit-mode").forEach((input) => {
+              const fieldName = input.classList.contains("edit-mode")
+                ? input.previousElementSibling.classList[0]
+                : input.classList[0];
+              data[fieldName] = input.value;
+              const span = input.previousElementSibling;
+              span.textContent = input.value;
+            });
+            console.log(data);
+            updateData(data);
+            exitEditMode(row);
+          } else if (e.target.classList.contains("cancel-btn")) {
+            exitEditMode(row);
+          } else if (e.target.classList.contains("delete")) {
+            if (confirm("Are you sure you want to delete this supplier?")) {
+              const id = row.dataset.id;
+              deleteData(id);
+              row.remove();
+            }
+          }
+        });
+
+      function exitEditMode(row) {
+        row.classList.remove("edit-mode");
+        row
+          .querySelectorAll(".display-mode")
+          .forEach((el) => (el.style.display = "inline"));
+        row
+          .querySelectorAll(".edit-mode")
+          .forEach((el) => (el.style.display = "none"));
+        row.querySelector(".update-btn").style.display = "inline-block";
+        row.querySelector(".delete").style.display = "inline-block";
+        row.querySelector(".save-btn").style.display = "none";
+        row.querySelector(".cancel-btn").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

@@ -14,19 +14,22 @@
           <tr>
             <th>Product Name</th>
             <th>Product ID</th>
+            <th>Batch ID</th>
             <th>Quantity In</th>
             <th>Current Quantity</th>
-            <th>Transactions</th>
+            <th>Inventory Transactions</th>
           </tr>
         </thead>
         <tbody>
           <% for (const productid in productInventory) { %> <% const product =
-          productInventory[productid]; %>
+          productInventory[productid]; %> <% for (const batchid in
+          product.batches) { %> <% const batch = product.batches[batchid]; %>
           <tr>
             <td><%= product.name %></td>
             <td><%= product.productid %></td>
-            <td><%= product.quantityin %></td>
-            <td><%= product.currentQuantity %></td>
+            <td><%= batch.batchid %></td>
+            <td><%= batch.quantityin %></td>
+            <td><%= batch.currentquantity %></td>
             <td>
               <table>
                 <thead>
@@ -37,7 +40,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <% for (const transaction of product.transactions) { %>
+                  <% for (const transaction of batch.transactions) { %>
                   <tr>
                     <td><%= transaction.transactionid %></td>
                     <td><%= transaction.transactiontype %></td>
@@ -48,7 +51,7 @@
               </table>
             </td>
           </tr>
-          <% } %>
+          <% } %> <% } %>
         </tbody>
       </table>
     </div>

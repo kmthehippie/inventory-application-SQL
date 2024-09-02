@@ -13,16 +13,19 @@
             <th>Sale Date</th>
             <th>Total Amount</th>
             <th>Payment Method</th>
+            <th>Status</th>
             <th>Sale Items</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <% for (const saleid in salesData) { %> <% const sale =
-          salesData[saleid]; %>
+          <% for (const saleid in salesData) { %>
+          <% const sale = salesData[saleid]; %>
           <tr>
             <td><%= sale.saleid %></td>
             <td><%= sale.saledate %></td>
             <td><%= sale.totalamount %></td>
+            <td><%= sale.status %></td>
             <td><%= sale.paymentmethod %></td>
             <td>
               <table>
@@ -32,6 +35,7 @@
                     <th>Price per Unit</th>
                     <th>Quantity Sold</th>
                     <th>Total Price</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -41,10 +45,21 @@
                     <td><%= item.pricePerUnit %></td>
                     <td><%= item.quantity %></td>
                     <td><%= item.totalPrice %></td>
+                    <td><%= item.status %></td>
                   </tr>
                   <% } %>
                 </tbody>
               </table>
+            </td>
+            <td>
+              <form action="/sales/update/<%= sale.saleid %>" method="POST">
+                <select name="status">
+                  <option value="COMPLETED" <%= sale.status === 'COMPLETED' ? 'selected' : '' %>>Completed</option>
+                  <option value="CANCELLED" <%= sale.status === 'CANCELLED' ? 'selected' : '' %>>Cancelled</option>
+                  <option value="REFUNDED" <%= sale.status === 'REFUNDED' ? 'selected' : '' %>>Refunded</option>
+                </select>
+                <button type="submit">Update Status</button>
+              </form>
             </td>
           </tr>
           <% } %>
@@ -52,4 +67,7 @@
       </table>
     </div>
   </body>
+  <script>
+    // document.adEl when click update status and it is not completed, we need to update sale items status, sale status, create new inventory transactions with the status included. WE NEED CALL FETCH to sales/update/:saleid -> saleitems with this saleid -> update the status all to returned or cancelled. -> create new inv transaction to add back these items into our inv
+  </script>
 </html>

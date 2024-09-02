@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('header') %>
+  <body>
+    <!-- <div class="sidebar"><%- include('sidebar.ejs') %></div> -->
+    <div class="main">
+      <h2>Create New Supplier</h2>
+      <form id="supplierForm" action="/suppliers/create" method="POST">
+        <div id="newSupplier">
+          <div class="new-supplier">
+            <label for="supplier">Supplier: </label>
+            <input type="text" id="supplier" name="supplier" />
+          </div>
+          <div class="email">
+            <label for="email">Email: </label>
+            <input type="email" id="email" name="email" />
+          </div>
+          <div class="number">
+            <label for="number">Number: </label>
+            <input type="tel" id="number" name="number" />
+          </div>
+          <button type="submit">Submit New Supplier</button>
+        </div>
+      </form>
+      <div id="errorMessage" style="color: red"></div>
+    </div>
+
+    <script>
+      document
+        .getElementById("supplierForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const supplierName = document.getElementById("supplier").value.trim();
+          const supplierEmail = document.getElementById("email").value.trim();
+          const supplierNumber = document.getElementById("number").value.trim();
+          if (!supplierName) return;
+
+          const supplier = {
+            name: supplierName,
+            email: supplierEmail,
+            number: supplierNumber,
+          };
+          console.log(supplier);
+          fetch("/suppliers/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(supplier),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.error) {
+                throw new Error(data.error);
+              }
+              console.log("Supplier created: ", data);
+              document.getElementById("supplier").value = "";
+              document.getElementById("email").value = "";
+              document.getElementById("number").value = "";
+              document.getElementById("errorMessage").textContent = "";
+              alert("Supplier added successfully!");
+            })
+            .catch((err) => {
+              console.error("Error creating supplier: ", err);
+              document.getElementById("errorMessage").textContent =
+                err.message || "An error occurred while creating the supplier";
+            });
+        });
+    </script>
+  </body>
+</html>

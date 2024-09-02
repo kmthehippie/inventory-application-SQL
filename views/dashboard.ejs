@@ -11,26 +11,29 @@
             Welcome to <em>Fruit Inventory</em>, a very basic Express website
             developed by km.
           </p>
-          <h1>Counter:</h1>
-          <p>The current fruits in stock are as follows:</p>
-
+          <h1>Countries:</h1>
           <p>We have fruits from all over the world! Just to name a few...</p>
           <ul>
             <%countries.forEach(function(country){ %>
-            <li><a href="/<%=country.country %>"><%=country.country %></a></li>
-            <%})%>
+            <a href="/countries"><%=country.country %></a
+            >, <%})%>
           </ul>
-          <p>Products In Stock</p>
+          <h1>Product List</h1>
           <ul>
-            <%products.forEach(function(prod){ %>
+            <h2>IN STOCK</h2>
+            <%products.forEach(p=>{ if(p.status === 'IN_STOCK'){%>
             <li>
-              <p>Debug: productid = <%=prod.productid%></p>
-              <a href="/product/<%=prod.productid%>"
-                ><h3><%=prod.name %> <small><%=prod.size%></small></h3></a
-              >
-              <p><%= prod.description%></p>
+              <a href="/products/<%=p.productid%>"><%=p.name%></a>
+              <%} })%>
             </li>
-            <%})%>
+          </ul>
+          <ul>
+            <h2>COMING SOON</h2>
+            <%products.forEach(p=>{ if(p.status === 'COMING SOON'){%>
+            <li>
+              <a href="/products/<%=p.productid%>"><%=p.name%></a>
+              <%} })%>
+            </li>
           </ul>
         </div>
       </div>

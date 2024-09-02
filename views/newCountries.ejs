@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('header') %>
+  <body>
+    <!-- <div class="sidebar"><%- include('sidebar.ejs') %></div> -->
+    <div class="main">
+      <h2>Create New Country</h2>
+      <form id="countryForm" action="/countries/create" method="POST">
+        <div id="newCountry">
+          <div class="new-country">
+            <label for="country">Country: </label>
+            <input type="text" id="country" />
+          </div>
+          <button type="submit">Submit New Country</button>
+        </div>
+      </form>
+      <div id="errorMessage" style="color: red"></div>
+    </div>
+
+    <script>
+      document
+        .getElementById("countryForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const countryValue = document.getElementById("country").value.trim();
+          if (!countryValue) return;
+
+          const country = { country: countryValue };
+          console.log(country);
+          fetch("/countries/create", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(country),
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.error) {
+                throw new Error(data.error);
+              }
+              console.log("Country created: ", data);
+              document.getElementById("country").value = "";
+              document.getElementById("errorMessage").textContent = "";
+              alert("Country added successfully!");
+            })
+            .catch((err) => {
+              console.error("Error creating country: ", err);
+              document.getElementById("errorMessage").textContent =
+                err.message || "An error occurred while creating the country";
+            });
+        });
+    </script>
+  </body>
+</html>

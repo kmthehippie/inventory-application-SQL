@@ -19,73 +19,45 @@ exports.GetDashboard = asyncHandler(async (req, res, next) => {
   }
 });
 
-exports.GetByCategories = asyncHandler(async (req, res, next) => {
-  const productCat = await db.getProductCategories();
-  res.render("category", {
-    title: "Category",
-    productCat,
-  });
-});
-
-exports.GetByCountries = asyncHandler(async (req, res, next) => {
-  let data = await db.getProductCountries();
-  // Filter out countries with no products
-  data = data.filter((country) => {
-    // Check if the country has any non-null products
-    return country.products.some((product) => product.productid !== null);
-  });
-
-  // Remove null products from each country
-  data.forEach((country) => {
-    country.products = country.products.filter(
-      (product) => product.productid !== null
-    );
-  });
-
-  res.render("country", {
-    title: "Country",
-    data,
-  });
-});
-
 exports.GetInventory = asyncHandler(async (req, res, next) => {
   const data = await db.getInventory();
   const data2 = await db.getInventory2();
 
-  // Create an object to hold the product information
   let productInventory = {};
-
-  // Loop through the data2 (the product transaction data)
   for (const transaction of data2) {
     const {
       transactionid,
       transactiontype,
       quantity,
       productid,
+      batchid,
       quantityin,
       currentquantity,
       name,
     } = transaction;
 
-    // If the product is not yet in the productInventory object, create a new entry
     if (!productInventory[productid]) {
       productInventory[productid] = {
         name,
         productid,
-        quantityin: quantityin,
-        currentQuantity: currentquantity,
-        transactions: [],
+        batches: {},
       };
     }
 
-    // Add the current transaction to the product's transactions array
-    productInventory[productid].transactions.push({
+    if (!productInventory[productid].batches[batchid]) {
+      productInventory[productid].batches[batchid] = {
+        batchid,
+        quantityin,
+        currentquantity,
+        transactions: [],
+      };
+    }
+    productInventory[productid].batches[batchid].transactions.push({
       transactionid,
       transactiontype,
       quantity,
     });
   }
-  // const data = await db.getProductTransactions();
   res.render("inventory", {
     title: "Inventory",
     data,
@@ -93,42 +65,33 @@ exports.GetInventory = asyncHandler(async (req, res, next) => {
   });
 });
 
-exports.GetSpoilages = asyncHandler(async (req, res, next) => {
-  const data = await db.getAllSpoilages();
-  // Create an object to hold the spoilage data
-  const spoilageData = [];
-
-  // Loop through the data and create an object for each spoilage
-  for (const row of data) {
-    spoilageData.push({
-      spoilageid: row.spoilageid,
-      quantityspoilt: row.quantityspoilt,
-      costperunit: row.costperunit,
-      totalcost: row.totalcost,
-      spoilagedate: row.spoilagedate,
-      name: row.name,
-      size: row.size,
-      quantityin: row.quantityin,
-      currentquantity: row.currentquantity,
-    });
-  }
-
-  // Render the spoilages view with the spoilageData object
-  res.render("spoilages", {
-    title: "Spoilages",
-    spoilageData,
+exports.GetBatches = asyncHandler(async (req, res, next) => {
+  const data = await db.getProductBatch();
+  res.render("newBatch.ejs", {
+    title: "Create New Product Batch",
+    data,
   });
 });
 
-exports.GetSpecificProduct = asyncHandler(async (req, res, next) => {
-  const productid = req.params.id;
-  const data = await db.getSpecificProduct(productid);
+exports.CreateBatchesPost = asyncHandler(async (req, res, next) => {
+  const { productID, cost, msrp, quantityIn } = req.body;
 
-  if (!data) {
-    return res.status(404).send("Product not found");
+  try {
+    // JUST FOR FUTURE REF: I CREATED THIS REQ.IMGURLS IN THE MIDDLEWARE
+    console.log(req.imgurls);
+    const data = {
+      productID: productID,
+      cost: cost,
+      msrp: msrp,
+      quantityIn: quantityIn,
+      imageURL: req.imgurls,
+    };
+    const result = await db.createBatch(data);
+    if (result) {
+      res.redirect("/inventory");
+    }
+  } catch (error) {
+    console.error("Error creating batch:", error);
+    res.status(500).send("Internal Server Error");
   }
-  res.render("product", {
-    title: data[0].name,
-    data: data[0],
-  });
 });

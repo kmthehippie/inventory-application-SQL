@@ -5,6 +5,216 @@
     <div class="sidebar"><%- include('sidebar.ejs') %></div>
     <div class="main">
       <h1><%=title%></h1>
+      <form id="saleForm" action="/createSale" method="POST">
+        <div id="saleItems">
+          <div class="sale-item" id="saleItemRow1">
+            <label for="saleitem1">Fruit:</label>
+            <select name="saleitem1" id="saleitem1" onchange="updatePrice(1)">
+              <option value="">--Please Select Product --</option>
+              <% data.forEach((prod)=>{ if(prod.status==="ACTIVE"){%>
+              <option
+                value="<%=prod.productid%>"
+                data-cost="<%=prod.cost%>"
+                data-msrp="<%=prod.msrp%>"
+              >
+                Batch:<%=prod.batchid%> <%=prod.name%> <%=prod.size%>
+              </option>
+              <%} }) %>
+            </select>
+            <label for="price1">Price:</label>
+            <input
+              type="number"
+              id="price1"
+              name="price1"
+              min="0"
+              step="0.01"
+              onchange="updateTotal(1)"
+              required
+            />
+            <label for="quantity1">Quantity:</label>
+            <input
+              type="number"
+              id="quantity1"
+              name="quantity1"
+              min="1"
+              value="1"
+              onchange="updateTotal(1)"
+              required
+            />
+            <span id="total1"></span>
+            <button type="button" onclick="deleteSaleItem(1)" disabled>
+              Delete
+            </button>
+          </div>
+        </div>
+        <button type="button" onclick="addSaleItem()">+</button>
+        <div>
+          <label for="paymentMethod">Payment Method:</label>
+          <select name="paymentMethod" id="paymentMethod" required>
+            <option value="">--Please Select Payment Method--</option>
+            <option value="CARD">Card</option>
+            <option value="CASH">Cash</option>
+            <option value="DIGITAL WALLET">Digital Wallet</option>
+          </select>
+        </div>
+        <div>
+          <label for="status">Payment Status:</label>
+          <select name="status" id="status" required>
+            <option value="">--Please Select Payment Status--</option>
+            <option value="COMPLETED" default>COMPLETED</option>
+            <option value="PENDING">PENDING</option>
+          </select>
+        </div>
+        <div>
+          <strong>Final Total: <span id="finalTotal">0</span></strong>
+        </div>
+        <button type="submit">Submit Sale</button>
+      </form>
     </div>
   </body>
+  <script>
+    let saleItemCount = 1;
+
+    function addSaleItem() {
+      saleItemCount++;
+      const saleItemsDiv = document.getElementById("saleItems");
+      const newSaleItem = document.createElement("div");
+      newSaleItem.className = "sale-item";
+      newSaleItem.id = `saleItemRow${saleItemCount}`;
+      newSaleItem.innerHTML = `
+        <label for="saleitem${saleItemCount}">Fruit:</label>
+        <select name="saleitem${saleItemCount}" id="saleitem${saleItemCount}" onchange="updatePrice(${saleItemCount})">
+          <option value="">--Please Select Product --</option>
+          <% data.forEach((prod)=>{ %>
+            <option value="<%=prod.productid%>" data-cost="<%=prod.cost%>" data-msrp="<%=prod.msrp%>"><%=prod.name%></option>
+          <% }) %>
+        </select>
+        <label for="price${saleItemCount}">Price:</label>
+        <input type="number" id="price${saleItemCount}" name="price${saleItemCount}" min="0" step="0.01" onchange="updateTotal(${saleItemCount})" required>
+        <label for="quantity${saleItemCount}">Quantity:</label>
+        <input type="number" id="quantity${saleItemCount}" name="quantity${saleItemCount}" min="1" value="1" onchange="updateTotal(${saleItemCount})" required>
+        <span id="total${saleItemCount}"></span>
+        <button type="button" onclick="deleteSaleItem(${saleItemCount})">Delete</button>
+      `;
+      saleItemsDiv.appendChild(newSaleItem);
+      updateTotal(saleItemCount);
+    }
+
+    function deleteSaleItem(index) {
+      if (index === 1) {
+        alert("The first item cannot be deleted.");
+        return;
+      }
+      const saleItem = document.getElementById(`saleItemRow${index}`);
+      if (saleItem) {
+        saleItem.remove();
+        const saleItems = document.querySelectorAll(".sale-item");
+        saleItems.forEach((item, i) => {
+          const newIndex = i + 1;
+          item.id = `saleItemRow${newIndex}`;
+          item.querySelector("select").id = `saleitem${newIndex}`;
+          item.querySelector("select").name = `saleitem${newIndex}`;
+          item.querySelector("select").onchange = () => updatePrice(newIndex);
+          item.querySelector('input[name^="price"]').id = `price${newIndex}`;
+          item.querySelector('input[name^="price"]').name = `price${newIndex}`;
+          item.querySelector('input[name^="price"]').onchange = () =>
+            updateTotal(newIndex);
+          item.querySelector(
+            'input[name^="quantity"]'
+          ).id = `quantity${newIndex}`;
+          item.querySelector(
+            'input[name^="quantity"]'
+          ).name = `quantity${newIndex}`;
+          item.querySelector('input[name^="quantity"]').onchange = () =>
+            updateTotal(newIndex);
+          item.querySelector("span").id = `total${newIndex}`;
+          item.querySelector("button").onclick = () => deleteSaleItem(newIndex);
+          if (newIndex === 1) {
+            item.querySelector("button").disabled = true;
+          }
+        });
+        saleItemCount = saleItems.length;
+        updateFinalTotal();
+      }
+    }
+
+    function updatePrice(index) {
+      const saleItemSelect = document.getElementById(`saleitem${index}`);
+      const priceInput = document.getElementById(`price${index}`);
+      const selectedOption =
+        saleItemSelect.options[saleItemSelect.selectedIndex];
+      const cost = parseFloat(selectedOption.dataset.cost);
+      const msrp = parseFloat(selectedOption.dataset.msrp);
+      priceInput.min = cost;
+      priceInput.value = msrp;
+      updateTotal(index);
+    }
+
+    function updateTotal(index) {
+      const priceInput = document.getElementById(`price${index}`);
+      const quantityInput = document.getElementById(`quantity${index}`);
+      const totalSpan = document.getElementById(`total${index}`);
+      const price = parseFloat(priceInput.value) || 0;
+      const quantity = parseInt(quantityInput.value) || 0;
+      const total = price * quantity;
+      totalSpan.textContent = total.toFixed(2);
+      updateFinalTotal();
+    }
+
+    function updateFinalTotal() {
+      let finalTotal = 0;
+      document.querySelectorAll('[id^="total"]').forEach((totalSpan) => {
+        finalTotal += parseFloat(totalSpan.textContent) || 0;
+      });
+      document.getElementById("finalTotal").textContent = finalTotal.toFixed(2);
+    }
+
+    document
+      .getElementById("saleForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        const sale = {
+          totalAmount: parseFloat(
+            document.getElementById("finalTotal").textContent
+          ),
+          paymentMethod: document.getElementById("paymentMethod").value,
+          saleItems: [],
+        };
+
+        document.querySelectorAll(".sale-item").forEach((item, index) => {
+          const saleItemSelect = item.querySelector("select");
+          const priceInput = item.querySelector(
+            'input[type="number"][name^="price"]'
+          );
+          const quantityInput = item.querySelector(
+            'input[type="number"][name^="quantity"]'
+          );
+
+          if (saleItemSelect && priceInput && quantityInput) {
+            const batchID = parseInt(saleItemSelect.value);
+            const pricePerUnit = parseFloat(priceInput.value);
+            const quantitySold = parseInt(quantityInput.value);
+
+            sale.saleItems.push({ batchID, pricePerUnit, quantitySold });
+          }
+        });
+
+        fetch("/sales/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(sale),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Sale created:", data);
+            window.location.href = "/sales";
+          })
+          .catch((error) => {
+            console.error("Error creating sale:", error);
+          });
+      });
+  </script>
 </html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('header') %>
+  <body>
+    <div class="sidebar"><%- include('sidebar.ejs') %></div>
+    <div class="main">
+      <h1><%=title%></h1>
+      <% if (locals.error) { %>
+      <div id="errorMessage" style="color: red"><%=error%></div>
+      <% } %>
+      <div id="newCategoryForm" style="display: none">
+        <%- include('newCategories.ejs') %>
+        <button type="button" id="closeNewCategory">
+          Click this to update the categories
+        </button>
+      </div>
+      <div id="newSupplierForm" style="display: none">
+        <%- include('newSupplier.ejs') %>
+        <button type="button" id="closeNewSupplier">
+          Click this to update the suppliers
+        </button>
+      </div>
+      <div id="newCountryForm" style="display: none">
+        <%- include('newCountries.ejs') %>
+        <button type="button" id="closeNewCountry">
+          Click this to update the countries
+        </button>
+      </div>
+
+      <form
+        id="productForm"
+        method="POST"
+        action="/products/create"
+        enctype="multipart/form-data"
+      >
+        <div>
+          <label for="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            onblur="checkName()"
+            required
+          />
+        </div>
+        <div>
+          <label for="size">Size:</label>
+          <input type="text" id="size" name="size" required />
+        </div>
+        <div>
+          <label for="images">Upload Images:</label>
+          <input
+            type="file"
+            id="images"
+            name="images"
+            accept="image/*"
+            multiple
+          />
+        </div>
+        <div>
+          <label for="description">Description:</label>
+          <textarea id="description" name="description"></textarea>
+        </div>
+        <div>
+          <label for="categoryID">Category:</label>
+          <select id="categoryID" name="categoryID" required>
+            <% data.category.forEach(data => { %>
+            <option value="<%= data.categoryid %>"><%= data.category %></option>
+            <% }); %>
+          </select>
+          <button type="button" id="createCategoryBtn">
+            Create New Category
+          </button>
+        </div>
+
+        <div>
+          <label for="countryID">Country:</label>
+          <select id="countryID" name="countryID" required>
+            <% data.country.forEach(country => { %>
+            <option value="<%= country.countryid %>">
+              <%= country.country %>
+            </option>
+            <% }); %>
+          </select>
+          <button type="button" id="createCountryBtn">
+            Create New Country
+          </button>
+        </div>
+
+        <div>
+          <label for="supplierID">Supplier:</label>
+          <select id="supplierID" name="supplierID" required>
+            <% data.supplier.forEach(supplier => { %>
+            <option value="<%= supplier.supplierid %>">
+              <%= supplier.name %>
+            </option>
+            <% }); %>
+          </select>
+          <button type="button" id="createSupplierBtn">
+            Create New Supplier
+          </button>
+        </div>
+
+        <!-- status -->
+        <div>
+          <label for="status">Status:</label>
+          <select id="status" name="status" required>
+            <option value="IN_STOCK">In Stock</option>
+            <option value="COMING SOON" selected>Coming Soon</option>
+          </select>
+        </div>
+
+        <div id="batchInfo" style="display: none">
+          <h2>Batch Information</h2>
+          <div>
+            <label for="cost">Cost:</label>
+            <input type="number" id="cost" name="cost" step="0.01" min="0" />
+          </div>
+          <div>
+            <label for="quantityIn">Quantity In:</label>
+            <input type="number" id="quantityIn" name="quantityIn" min="1" />
+          </div>
+          <div>
+            <label for="imageURL">Image URL:</label>
+            <input type="url" id="imageURL" name="imageURL" />
+          </div>
+        </div>
+        <button type="submit">Create Product</button>
+      </form>
+    </div>
+
+    <script>
+      const updateCategories = async () => {
+        try {
+          const response = await fetch("/categories/allCategories");
+          const categories = await response.json();
+          const categorySelect = document.getElementById("categoryID");
+          categorySelect.innerHTML = "";
+          categories.forEach((category) => {
+            const option = document.createElement("option");
+            option.value = category.categoryid;
+            option.textContent = category.category;
+            categorySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching categories:", error);
+        }
+      };
+
+      const updateCountries = async () => {
+        try {
+          const response = await fetch("/countries/allCountries");
+          const countries = await response.json();
+          const countrySelect = document.getElementById("countryID");
+          countrySelect.innerHTML = "";
+          countries.forEach((country) => {
+            const option = document.createElement("option");
+            option.value = country.countryid;
+            option.textContent = country.country;
+            countrySelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching countries:", error);
+        }
+      };
+      const updateSuppliers = async () => {
+        try {
+          const response = await fetch("/suppliers/list");
+          console.log("From html response", response);
+          const suppliers = await response.json();
+          const supplierSelect = document.getElementById("supplierID");
+          supplierSelect.innerHTML = "";
+          console.log(suppliers);
+          suppliers.forEach((supplier) => {
+            const option = document.createElement("option");
+            option.value = supplier.supplierid;
+            option.textContent = supplier.name;
+            supplierSelect.appendChild(option);
+          });
+        } catch (error) {
+          console.error("Error fetching suppliers:", error);
+        }
+      };
+      const checkName = async () => {
+        const nameInput = document.getElementById("name");
+        const name = nameInput.value;
+
+        if (name.trim() === "") return;
+
+        try {
+          const response = await fetch(
+            `/products/check-name?name=${encodeURIComponent(name)}`
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              console.log("Product created!");
+            })
+            .catch((err) => {
+              console.error("Error creating supplier: ", err);
+              document.getElementById("errorMessage").textContent =
+                err.message || "An error occurred while creating the supplier";
+            });
+
+          if (data.exists) {
+            alert(
+              `The name "${name}" already exists with size(s): ${data.sizes.join(
+                ", "
+              )}`
+            );
+          }
+        } catch (error) {
+          console.error("Error checking name:", error);
+        }
+      };
+
+      const createCategoryBtn = document.getElementById("createCategoryBtn");
+      const closeCreateCategoryBtn =
+        document.getElementById("closeNewCategory");
+      const newCategoryForm = document.getElementById("newCategoryForm");
+      createCategoryBtn.addEventListener("click", () => {
+        newCategoryForm.style.display =
+          newCategoryForm.style.display === "none" ? "block" : "none";
+      });
+      closeCreateCategoryBtn.addEventListener("click", () => {
+        newCategoryForm.style.display = "none";
+        updateCategories();
+      });
+
+      const createCountryBtn = document.getElementById("createCountryBtn");
+      const closeCreateCountryBtn = document.getElementById("closeNewCountry");
+      const newCountryForm = document.getElementById("newCountryForm");
+      createCountryBtn.addEventListener("click", () => {
+        newCountryForm.style.display =
+          newCountryForm.style.display === "none" ? "block" : "none";
+      });
+      closeCreateCountryBtn.addEventListener("click", () => {
+        newCountryForm.style.display = "none";
+        updateCountries();
+      });
+
+      const createSupplierBtn = document.getElementById("createSupplierBtn");
+      const closeCreateSupplierBtn =
+        document.getElementById("closeNewSupplier");
+      const newSupplierForm = document.getElementById("newSupplierForm");
+      createSupplierBtn.addEventListener("click", () => {
+        newSupplierForm.style.display =
+          newSupplierForm.style.display === "none" ? "block" : "none";
+      });
+      closeCreateSupplierBtn.addEventListener("click", () => {
+        newSupplierForm.style.display = "none";
+        updateSuppliers();
+      });
+
+      document.getElementById("status").addEventListener("change", function () {
+        const batchInfo = document.getElementById("batchInfo");
+        if (this.value === "IN_STOCK") {
+          batchInfo.style.display = "block";
+        } else {
+          batchInfo.style.display = "none";
+        }
+      });
+
+      document.getElementById("productForm").addEventListener("submit", () => {
+        window.location.href = "/";
+      });
+    </script>
+  </body>
+</html>
