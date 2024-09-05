@@ -34,64 +34,66 @@
     }
   </style>
   <body>
-    <%- include("sidebar.ejs") %>
-    <div class="main">
-      <h1><%=title%></h1>
-      <table id="supplierTable">
-        <thead>
-          <tr>
-            <th>Supplier ID</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Number</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% suppliers.forEach(function(supplier) { %>
-          <tr data-id="<%= supplier.supplierid %>">
-            <td><%= supplier.supplierid %></td>
-            <td>
-              <span class="display-mode name"><%= supplier.name %></span
-              ><input
-                type="text"
-                class="edit-mode"
-                value="<%= supplier.name %>"
-                style="display: none"
-              />
-            </td>
-            <td>
-              <span class="display-mode email"><%= supplier.email %></span
-              ><input
-                type="email"
-                class="edit-mode"
-                value="<%= supplier.email %>"
-                style="display: none"
-              />
-            </td>
-            <td>
-              <span class="display-mode number"><%= supplier.number %></span
-              ><input
-                type="tel"
-                class="edit-mode"
-                value="<%= supplier.number %>"
-                style="display: none"
-              />
-            </td>
-            <td>
-              <button class="button update-btn">Update</button>
-              <button class="button delete">Delete</button>
-              <button class="button save-btn" style="display: none">
-                Save
-              </button>
-              <button class="button cancel-btn" style="display: none">
-                Cancel
-              </button>
-            </td>
-          </tr>
-          <% }); %>
-        </tbody>
-      </table>
+    <div class="body-class">
+      <%- include("sidebar.ejs") %>
+      <div class="main">
+        <h1><%=title%></h1>
+        <table id="supplierTable">
+          <thead>
+            <tr>
+              <th>Supplier ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Number</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% suppliers.forEach(function(supplier) { %>
+            <tr data-id="<%= supplier.supplierid %>">
+              <td><%= supplier.supplierid %></td>
+              <td>
+                <span class="display-mode name"><%= supplier.name %></span
+                ><input
+                  type="text"
+                  class="edit-mode"
+                  value="<%= supplier.name %>"
+                  style="display: none"
+                />
+              </td>
+              <td>
+                <span class="display-mode email"><%= supplier.email %></span
+                ><input
+                  type="email"
+                  class="edit-mode"
+                  value="<%= supplier.email %>"
+                  style="display: none"
+                />
+              </td>
+              <td>
+                <span class="display-mode number"><%= supplier.number %></span
+                ><input
+                  type="tel"
+                  class="edit-mode"
+                  value="<%= supplier.number %>"
+                  style="display: none"
+                />
+              </td>
+              <td>
+                <button class="button update-btn">Update</button>
+                <button class="button delete">Delete</button>
+                <button class="button save-btn" style="display: none">
+                  Save
+                </button>
+                <button class="button cancel-btn" style="display: none">
+                  Cancel
+                </button>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
     </div>
     <script>
       const updateData = async (data) => {

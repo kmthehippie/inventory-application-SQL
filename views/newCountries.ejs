@@ -2,21 +2,22 @@
 <html lang="en">
   <%- include('header') %>
   <body>
-    <!-- <div class="sidebar"><%- include('sidebar.ejs') %></div> -->
-    <div class="main">
-      <h2>Create New Country</h2>
-      <form id="countryForm" action="/countries/create" method="POST">
-        <div id="newCountry">
-          <div class="new-country">
-            <label for="country">Country: </label>
-            <input type="text" id="country" />
+    <div class="body-class">
+      <!-- <div class="sidebar"><%- include('sidebar.ejs') %></div> -->
+      <div class="main">
+        <h2>Create New Country</h2>
+        <form id="countryForm" action="/countries/create" method="POST">
+          <div id="newCountry">
+            <div class="new-country">
+              <label for="country">Country: </label>
+              <input type="text" id="country" />
+            </div>
+            <button type="submit">Submit New Country</button>
           </div>
-          <button type="submit">Submit New Country</button>
-        </div>
-      </form>
-      <div id="errorMessage" style="color: red"></div>
+        </form>
+        <div id="errorMessage" style="color: red"></div>
+      </div>
     </div>
-
     <script>
       document
         .getElementById("countryForm")

@@ -2,19 +2,21 @@
 <html lang="en">
   <%- include('header') %>
   <body>
-    <!-- <div class="sidebar"><%- include('sidebar.ejs') %></div> -->
-    <div class="main">
-      <h2>New Category</h2>
-      <form id="categoryForm" action="/categories/create" method="POST">
-        <div id="newCategory">
-          <div class="new-category">
-            <label for="category">Category: </label>
-            <input type="text" id="category" />
+    <div class="body-class">
+      <%- include('sidebar.ejs') %>
+      <div class="main">
+        <h2>New Category</h2>
+        <form id="categoryForm" action="/categories/create" method="POST">
+          <div id="newCategory">
+            <div class="new-category">
+              <label for="category">Category: </label>
+              <input type="text" id="category" />
+            </div>
+            <button type="submit">Submit New Category</button>
           </div>
-          <button type="submit">Submit New Category</button>
-        </div>
-      </form>
-      <div id="errorMessage" style="color: red"></div>
+        </form>
+        <div id="errorMessage" style="color: red"></div>
+      </div>
     </div>
     <script>
       document

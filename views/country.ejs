@@ -2,23 +2,25 @@
 <html lang="en">
   <%- include('header') %>
   <body>
-    <div class="sidebar"><%- include('sidebar.ejs') %></div>
-    <div class="main">
-      <h1><%=title%></h1>
-      <ul>
-        <% data.forEach(country => { %>
-        <h2><%=country.country%></h2>
+    <div class="body-class">
+      <div class="sidebar"><%- include('sidebar.ejs') %></div>
+      <div class="main">
+        <h1><%=title%></h1>
         <ul>
-          <% country.products.forEach(product => { %>
-          <li>
-            <a href="/products/<%=product.productid%>"
-              ><%=product.name%> (<%=product.size%>)</a
-            >
-          </li>
+          <% data.forEach(country => { %>
+          <h2><%=country.country%></h2>
+          <ul>
+            <% country.products.forEach(product => { %>
+            <li>
+              <a href="/products/<%=product.productid%>"
+                ><%=product.name%> (<%=product.size%>)</a
+              >
+            </li>
+            <% }) %>
+          </ul>
           <% }) %>
         </ul>
-        <% }) %>
-      </ul>
+      </div>
     </div>
   </body>
 </html>

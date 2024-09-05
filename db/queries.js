@@ -84,7 +84,6 @@ exports.getSpecificProduct = async (productid) => {
     LEFT JOIN countries c ON c.countryid = p.countryid
     WHERE p.productid = ${productid}
   `);
-  console.log(rows);
   return rows;
 };
 
@@ -474,6 +473,5 @@ exports.getProductImages = async (productId) => {
       WHERE productid = $1`,
     [productId]
   );
-  console.log(rows);
   return rows;
 };

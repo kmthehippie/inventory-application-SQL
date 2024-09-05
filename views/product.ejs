@@ -2,30 +2,32 @@
 <html lang="en">
   <%- include('header') %>
   <body>
-    <div class="sidebar"><%- include('sidebar.ejs') %></div>
-    <div class="main">
-      <h1><%=title%> <small><%=product.size%></small></h1>
-      <div id="image-slider">
-        <% batches.forEach(function(batch) { %> <%
-        batch.imageurl.forEach(function(url) { %>
-        <img src="<%=url%>" alt="<%=product.name%>" />
-        <% }); %> <% }); %>
+    <div class="body-class">
+      <div class="sidebar"><%- include('sidebar.ejs') %></div>
+      <div class="main">
+        <h1><%=title%> <small><%=product.size%></small></h1>
+        <div id="image-slider">
+          <% batches.forEach(function(batch) { %> <%
+          batch.imageurl.forEach(function(url) { %>
+          <img src="<%=url%>" alt="<%=product.name%>" />
+          <% }); %> <% }); %>
+        </div>
+        <p><%=product.description%></p>
+        <p>From <%=product.country%></p>
+        <h2>Batches</h2>
+        <ul>
+          <% batches.forEach(function(batch) { %>
+          <li>
+            <p>Batch: <%=batch.batchid%> Date: <%=batch.datein%></p>
+            <p class="hidden">MSRP: <%=batch.msrp%></p>
+            <p>
+              Stock In: <%=batch.quantityin%> Current Quantity:
+              <%=batch.currentquantity%>
+            </p>
+          </li>
+          <% }); %>
+        </ul>
       </div>
-      <p><%=product.description%></p>
-      <p>From <%=product.country%></p>
-      <h2>Batches</h2>
-      <ul>
-        <% batches.forEach(function(batch) { %>
-        <li>
-          <p>Batch: <%=batch.batchid%> Date: <%=batch.datein%></p>
-          <p class="hidden">MSRP: <%=batch.msrp%></p>
-          <p>
-            Stock In: <%=batch.quantityin%> Current Quantity:
-            <%=batch.currentquantity%>
-          </p>
-        </li>
-        <% }); %>
-      </ul>
     </div>
   </body>
 </html>

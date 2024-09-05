@@ -2,58 +2,60 @@
 <html lang="en">
   <%- include('header.ejs') %>
   <body>
-    <div class="sidebar"><%- include('sidebar.ejs') %></div>
-    <div class="main">
-      <h1><%=title%></h1>
-      <form
-        action="/batches/create"
-        method="POST"
-        id="batchesForm"
-        enctype="multipart/form-data"
-      >
-        <div>
-          <label for="productID">Product:</label>
-          <select id="productID" name="productID" required>
-            <% data.forEach(item => { %>
-            <option value="<%= item.productid %>">
-              <%= item.product %> sized <%= item.size %> from <%= item.country
-              %> <%= item.supplier %>
-            </option>
-            <% }); %>
-          </select>
-        </div>
-        <div>
-          <label for="cost">Cost:</label>
-          <input
-            type="number"
-            id="cost"
-            name="cost"
-            onchange="updateMSRP()"
-            required
-          />
-        </div>
-        <div>
-          <label for="msrp"
-            >MSRP: <small>Manufacturer Suggested Retail Price</small></label
-          >
-          <input type="number" id="msrp" name="msrp" required />
-        </div>
-        <div>
-          <label for="quantityIn">Quantity In:</label>
-          <input type="number" id="quantityIn" name="quantityIn" required />
-        </div>
-        <div>
-          <label for="images">Upload Images:</label>
-          <input
-            type="file"
-            id="images"
-            name="images"
-            accept="image/*"
-            multiple
-          />
-        </div>
-        <button type="submit">Create Batch</button>
-      </form>
+    <div class="body-class">
+      <div class="sidebar"><%- include('sidebar.ejs') %></div>
+      <div class="main">
+        <h1><%=title%></h1>
+        <form
+          action="/batches/create"
+          method="POST"
+          id="batchesForm"
+          enctype="multipart/form-data"
+        >
+          <div>
+            <label for="productID">Product:</label>
+            <select id="productID" name="productID" required>
+              <% data.forEach(item => { %>
+              <option value="<%= item.productid %>">
+                <%= item.product %> sized <%= item.size %> from <%= item.country
+                %> <%= item.supplier %>
+              </option>
+              <% }); %>
+            </select>
+          </div>
+          <div>
+            <label for="cost">Cost:</label>
+            <input
+              type="number"
+              id="cost"
+              name="cost"
+              onchange="updateMSRP()"
+              required
+            />
+          </div>
+          <div>
+            <label for="msrp"
+              >MSRP: <small>Manufacturer Suggested Retail Price</small></label
+            >
+            <input type="number" id="msrp" name="msrp" required />
+          </div>
+          <div>
+            <label for="quantityIn">Quantity In:</label>
+            <input type="number" id="quantityIn" name="quantityIn" required />
+          </div>
+          <div>
+            <label for="images">Upload Images:</label>
+            <input
+              type="file"
+              id="images"
+              name="images"
+              accept="image/*"
+              multiple
+            />
+          </div>
+          <button type="submit">Create Batch</button>
+        </form>
+      </div>
     </div>
     <script>
       let cost = document.getElementById("cost");

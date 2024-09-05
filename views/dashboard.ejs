@@ -2,39 +2,42 @@
 <html lang="en">
   <body>
     <div>
-      <div>
-        <div class="sidebar"><%- include('sidebar.ejs') %></div>
+      <%- include('header') %>
+      <div class="body-class">
+        <div>
+          <div class="sidebar"><%- include('sidebar.ejs') %></div>
 
-        <div class="main">
-          <h1>Dashboard</h1>
-          <p>
-            Welcome to <em>Fruit Inventory</em>, a very basic Express website
-            developed by km.
-          </p>
-          <h1>Countries:</h1>
-          <p>We have fruits from all over the world! Just to name a few...</p>
-          <ul>
-            <%countries.forEach(function(country){ %>
-            <a href="/countries"><%=country.country %></a
-            >, <%})%>
-          </ul>
-          <h1>Product List</h1>
-          <ul>
-            <h2>IN STOCK</h2>
-            <%products.forEach(p=>{ if(p.status === 'IN_STOCK'){%>
-            <li>
-              <a href="/products/<%=p.productid%>"><%=p.name%></a>
-              <%} })%>
-            </li>
-          </ul>
-          <ul>
-            <h2>COMING SOON</h2>
-            <%products.forEach(p=>{ if(p.status === 'COMING SOON'){%>
-            <li>
-              <a href="/products/<%=p.productid%>"><%=p.name%></a>
-              <%} })%>
-            </li>
-          </ul>
+          <div class="main">
+            <h1>Dashboard</h1>
+            <p>
+              Welcome to <em>Fruit Inventory</em>, a very basic Express website
+              developed by km.
+            </p>
+            <h1>Countries:</h1>
+            <p>We have fruits from all over the world! Just to name a few...</p>
+            <ul>
+              <%countries.forEach(function(country){ %>
+              <a href="/countries"><%=country.country %></a
+              >, <%})%>
+            </ul>
+            <h1>Product List</h1>
+            <ul>
+              <h2>IN STOCK</h2>
+              <%products.forEach(p=>{ if(p.status === 'IN_STOCK'){%>
+              <li>
+                <a href="/products/<%=p.productid%>"><%=p.name%></a>
+                <%} })%>
+              </li>
+            </ul>
+            <ul>
+              <h2>COMING SOON</h2>
+              <%products.forEach(p=>{ if(p.status === 'COMING SOON'){%>
+              <li>
+                <a href="/products/<%=p.productid%>"><%=p.name%></a>
+                <%} })%>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

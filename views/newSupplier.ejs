@@ -2,29 +2,30 @@
 <html lang="en">
   <%- include('header') %>
   <body>
-    <!-- <div class="sidebar"><%- include('sidebar.ejs') %></div> -->
-    <div class="main">
-      <h2>Create New Supplier</h2>
-      <form id="supplierForm" action="/suppliers/create" method="POST">
-        <div id="newSupplier">
-          <div class="new-supplier">
-            <label for="supplier">Supplier: </label>
-            <input type="text" id="supplier" name="supplier" />
+    <div class="body-class">
+      <%- include('sidebar.ejs') %>
+      <div class="main">
+        <h2>Create New Supplier</h2>
+        <form id="supplierForm" action="/suppliers/create" method="POST">
+          <div id="newSupplier">
+            <div class="new-supplier">
+              <label for="supplier">Supplier: </label>
+              <input type="text" id="supplier" name="supplier" />
+            </div>
+            <div class="email">
+              <label for="email">Email: </label>
+              <input type="email" id="email" name="email" />
+            </div>
+            <div class="number">
+              <label for="number">Number: </label>
+              <input type="tel" id="number" name="number" />
+            </div>
+            <button type="submit">Submit New Supplier</button>
           </div>
-          <div class="email">
-            <label for="email">Email: </label>
-            <input type="email" id="email" name="email" />
-          </div>
-          <div class="number">
-            <label for="number">Number: </label>
-            <input type="tel" id="number" name="number" />
-          </div>
-          <button type="submit">Submit New Supplier</button>
-        </div>
-      </form>
-      <div id="errorMessage" style="color: red"></div>
+        </form>
+        <div id="errorMessage" style="color: red"></div>
+      </div>
     </div>
-
     <script>
       document
         .getElementById("supplierForm")

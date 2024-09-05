@@ -22,7 +22,7 @@ app.set("view engine", "ejs");
 //setup all other stuff
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname, "/public")));
 
 app.use("/", indexRouter);
 app.use("/sales", salesRouter);

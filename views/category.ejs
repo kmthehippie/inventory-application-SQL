@@ -2,6 +2,7 @@
 <html lang="en">
   <%- include('header') %>
   <body>
+      <div class="body-class">
     <div class="sidebar"><%- include('sidebar.ejs') %></div>
     <div class="main">
       <h1>Categories</h1>
@@ -34,7 +35,7 @@
       <ul>
         <div id="deleteMessage"></div>
 </div>
-
+</div>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     const deleteCategoryButtons = document.querySelectorAll('.delete-category');

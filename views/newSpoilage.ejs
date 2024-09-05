@@ -2,75 +2,79 @@
 <html lang="en">
   <%- include('header') %>
   <body>
-    <div class="sidebar"><%- include('sidebar.ejs') %></div>
-    <div class="main">
-      <h1><%=title%></h1>
-      <form id="spoilageForm" action="/createSpoilage" method="POST">
-        <div id="spoilageItems">
-          <div class="spoilage-item" id="spoilageItemRow1">
-            <label for="product1">Product:</label>
-            <select
-              name="productID1"
-              id="productID1"
-              onchange="updateBatches(1)"
-              required
-            >
-              <option value="">--Please Select Product--</option>
-              <% const uniqueProducts = [...new Set(productBatches.map(item =>
-              item.productid))]; uniqueProducts.forEach((productId) => { const
-              product = productBatches.find(item => item.productid ===
-              productId); %>
-              <option value="<%=product.productid%>"><%=product.name%></option>
-              <% }) %>
-            </select>
+    <div class="body-class">
+      <%- include('sidebar.ejs') %>
+      <div class="main">
+        <h1><%=title%></h1>
+        <form id="spoilageForm" action="/createSpoilage" method="POST">
+          <div id="spoilageItems">
+            <div class="spoilage-item" id="spoilageItemRow1">
+              <label for="product1">Product:</label>
+              <select
+                name="productID1"
+                id="productID1"
+                onchange="updateBatches(1)"
+                required
+              >
+                <option value="">--Please Select Product--</option>
+                <% const uniqueProducts = [...new Set(productBatches.map(item =>
+                item.productid))]; uniqueProducts.forEach((productId) => { const
+                product = productBatches.find(item => item.productid ===
+                productId); %>
+                <option value="<%=product.productid%>">
+                  <%=product.name%>
+                </option>
+                <% }) %>
+              </select>
 
-            <label for="batchID1">Product Batch:</label>
-            <select
-              name="batchID1"
-              id="batchID1"
-              onchange="updateCost(1)"
-              required
-            >
-              <option value="">--Please Select Product Batch--</option>
-            </select>
+              <label for="batchID1">Product Batch:</label>
+              <select
+                name="batchID1"
+                id="batchID1"
+                onchange="updateCost(1)"
+                required
+              >
+                <option value="">--Please Select Product Batch--</option>
+              </select>
 
-            <label for="quantitySpoilt1">Quantity Spoilt:</label>
-            <input
-              type="number"
-              id="quantitySpoilt1"
-              name="quantitySpoilt1"
-              min="1"
-              max="1"
-              value="1"
-              onchange="updateTotal(1)"
-              required
-            />
-            <label for="costPerUnit1">Cost Per Unit:</label>
-            <input
-              type="number"
-              id="costPerUnit1"
-              name="costPerUnit1"
-              min="0"
-              step="0.01"
-              onchange="updateTotal(1)"
-              required
-              readonly
-            />
-            <label for="imageURL1">Image URL:</label>
-            <input type="text" id="imageURL1" name="imageURL1" />
-            <span id="total1"></span>
-            <button type="button" onclick="deleteSpoilageItem(1)" disabled>
-              Delete
-            </button>
+              <label for="quantitySpoilt1">Quantity Spoilt:</label>
+              <input
+                type="number"
+                id="quantitySpoilt1"
+                name="quantitySpoilt1"
+                min="1"
+                max="1"
+                value="1"
+                onchange="updateTotal(1)"
+                required
+              />
+              <label for="costPerUnit1">Cost Per Unit:</label>
+              <input
+                type="number"
+                id="costPerUnit1"
+                name="costPerUnit1"
+                min="0"
+                step="0.01"
+                onchange="updateTotal(1)"
+                required
+                readonly
+              />
+              <label for="imageURL1">Image URL:</label>
+              <input type="text" id="imageURL1" name="imageURL1" />
+              <span id="total1"></span>
+              <button type="button" onclick="deleteSpoilageItem(1)" disabled>
+                Delete
+              </button>
+            </div>
           </div>
-        </div>
-        <button type="button" onclick="addSpoilageItem()">+</button>
+          <button type="button" onclick="addSpoilageItem()">+</button>
 
-        <div>
-          <strong>Final Total Cost: <span id="finalTotal">0</span></strong>
-        </div>
-        <button type="submit">Submit Spoilage</button>
-      </form>
+          <div>
+            <strong>Final Total Cost: <span id="finalTotal">0</span></strong>
+          </div>
+          <button type="submit">Submit Spoilage</button>
+        </form>
+      </div>
     </div>
   </body>
   <script>
