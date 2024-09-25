@@ -3,31 +3,31 @@
   <%- include('header') %>
   <body>
     <div class="body-class">
-    <div class="sidebar"><%- include('sidebar.ejs') %></div>
-    <div class="main">
-      <h1><%=title%></h1>
-      <% if (locals.error) { %>
-      <div id="errorMessage" style="color: red"><%=error%></div>
-      <d% } %>
-      <div id="newCategoryForm" style="display: none">
-        <%- include('newCategories.ejs') %>
-        <button type="button" id="closeNewCategory">
-          Click this to update the categories
-        </button>
+      <div class="sidebar"><%- include('sidebar.ejs') %></div>
+      <div class="main">
+        <h1><%=title%></h1>
+        <% if (locals.error) { %>
+        <div id="errorMessage" style="color: red"><%=error%></div>
+        <% } %>
+        <div id="newCategoryForm" style="display: none">
+          <%- include('newCategories.ejs') %>
+          <button type="button" id="closeNewCategory">
+            Click this to update the categories
+          </button>
+        </div>
+        <div id="newSupplierForm" style="display: none">
+          <%- include('newSupplier.ejs') %>
+          <button type="button" id="closeNewSupplier">
+            Click this to update the suppliers
+          </button>
+        </div>
+        <div id="newCountryForm" style="display: none">
+          <%- include('newCountries.ejs') %>
+          <button type="button" id="closeNewCountry">
+            Click this to update the countries
+          </button>
+        </div>
       </div>
-      <div id="newSupplierForm" style="display: none">
-        <%- include('newSupplier.ejs') %>
-        <button type="button" id="closeNewSupplier">
-          Click this to update the suppliers
-        </button>
-      </div>
-      <div id="newCountryForm" style="display: none">
-        <%- include('newCountries.ejs') %>
-        <button type="button" id="closeNewCountry">
-          Click this to update the countries
-        </button>
-      </div>
-    </div>
       <form
         id="productForm"
         method="POST"

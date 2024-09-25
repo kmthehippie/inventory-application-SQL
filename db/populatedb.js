@@ -215,7 +215,7 @@ $$ LANGUAGE plpgsql;
 const main = async () => {
   console.log("Seeding...");
   const client = new Client({
-    connectionString: process.env.CONNECTION_STRING_DEV,
+    connectionString: process.env.DATABASE_URL,
   });
   try {
     await client.connect();
