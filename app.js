@@ -48,4 +48,6 @@ app.use(function (err, req, res, next) {
   res.render("error", { title: "Error", error: err });
 });
 
-app.listen(process.env.PORT);
+app.listen(process.env.PORT, "0.0.0.0", () => {
+  console.log(`Listening on 0.0.0.0 ${process.env.PORT}`);
+});
