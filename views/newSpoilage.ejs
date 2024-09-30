@@ -6,7 +6,12 @@
       <%- include('sidebar.ejs') %>
       <div class="main">
         <h1><%=title%></h1>
-        <form id="spoilageForm" action="/createSpoilage" method="POST">
+        <form
+          id="spoilageForm"
+          action="/createSpoilage"
+          method="POST"
+          enctype="multipart/form-data"
+        >
           <div id="spoilageItems">
             <div class="spoilage-item" id="spoilageItemRow1">
               <label for="product1">Product:</label>
@@ -59,8 +64,16 @@
                 required
                 readonly
               />
-              <label for="imageURL1">Image URL:</label>
-              <input type="text" id="imageURL1" name="imageURL1" />
+              <div>
+                <label for="imageURL1">Upload Images:</label>
+                <input
+                  type="file"
+                  id="imageURL1"
+                  name="imageURL1"
+                  accept="image/*"
+                  multiple
+                />
+              </div>
               <span id="total1"></span>
               <button type="button" onclick="deleteSpoilageItem(1)" disabled>
                 Delete
@@ -78,188 +91,197 @@
     </div>
   </body>
   <script>
-        let spoilageItemCount = 1;
-        const productBatches = <%- JSON.stringify(productBatches) %>;
+            let spoilageItemCount = 1;
+            const productBatches = <%- JSON.stringify(productBatches) %>;
 
-        function addSpoilageItem() {
-          spoilageItemCount++;
-          const spoilageItemsDiv = document.getElementById("spoilageItems");
-          const uniqueProducts = [...new Set(productBatches.map(item =>
-                  item.productid))]
-          const newSpoilageItem = document.createElement("div");
-          newSpoilageItem.className = "spoilage-item";
-          newSpoilageItem.id = `spoilageItemRow${spoilageItemCount}`;
-          newSpoilageItem.innerHTML = `
-            <label for="product${spoilageItemCount}">Product:</label>
-            <select
-              name="productID${spoilageItemCount}"
-              id="productID${spoilageItemCount}"
-              onchange="updateBatches(${spoilageItemCount})"
-              required
-            >
-              <option value="">--Please Select Product--</option>
+            function addSpoilageItem() {
+              spoilageItemCount++;
+              const spoilageItemsDiv = document.getElementById("spoilageItems");
+              const uniqueProducts = [...new Set(productBatches.map(item =>
+                      item.productid))]
+              const newSpoilageItem = document.createElement("div");
+              newSpoilageItem.className = "spoilage-item";
+              newSpoilageItem.id = `spoilageItemRow${spoilageItemCount}`;
+              newSpoilageItem.innerHTML = `
+                <label for="product${spoilageItemCount}">Product:</label>
+                <select
+                  name="productID${spoilageItemCount}"
+                  id="productID${spoilageItemCount}"
+                  onchange="updateBatches(${spoilageItemCount})"
+                  required
+                >
+                  <option value="">--Please Select Product--</option>
 
-              ${uniqueProducts.map(productId => {
-                const product = productBatches.find(item => item.productid === productId);
-                return `<option value="${product.productid}">${product.name}</option>`;
-              }).join('')}
-            </select>
+                  ${uniqueProducts.map(productId => {
+                    const product = productBatches.find(item => item.productid === productId);
+                    return `<option value="${product.productid}">${product.name}</option>`;
+                  }).join('')}
+                </select>
 
-            <label for="batchID${spoilageItemCount}">Product Batch:</label>
-            <select
-              name="batchID${spoilageItemCount}"
-              id="batchID${spoilageItemCount}"
-              onchange="updateCost(${spoilageItemCount})"
-              required
-            >
-              <option value="">--Please Select Product Batch--</option>
-            </select>
+                <label for="batchID${spoilageItemCount}">Product Batch:</label>
+                <select
+                  name="batchID${spoilageItemCount}"
+                  id="batchID${spoilageItemCount}"
+                  onchange="updateCost(${spoilageItemCount})"
+                  required
+                >
+                  <option value="">--Please Select Product Batch--</option>
+                </select>
 
-            <label for="quantitySpoilt${spoilageItemCount}">Quantity Spoilt:</label>
-            <input
-              type="number"
-              id="quantitySpoilt${spoilageItemCount}"
-              name="quantitySpoilt${spoilageItemCount}"
-              min="1"
-              max="1"
-              value="1"
-              onchange="updateTotal(${spoilageItemCount})"
-              required
-            />
-            <label for="costPerUnit${spoilageItemCount}">Cost Per Unit:</label>
-            <input
-              type="number"
-              id="costPerUnit${spoilageItemCount}"
-              name="costPerUnit${spoilageItemCount}"
-              min="0"
-              step="0.01"
-              onchange="updateTotal(${spoilageItemCount})"
-              required
-              readonly
-            />
-            <span id="total${spoilageItemCount}"></span>
+                <label for="quantitySpoilt${spoilageItemCount}">Quantity Spoilt:</label>
+                <input
+                  type="number"
+                  id="quantitySpoilt${spoilageItemCount}"
+                  name="quantitySpoilt${spoilageItemCount}"
+                  min="1"
+                  max="1"
+                  value="1"
+                  onchange="updateTotal(${spoilageItemCount})"
+                  required
+                />
+                <label for="costPerUnit${spoilageItemCount}">Cost Per Unit:</label>
+                <input
+                  type="number"
+                  id="costPerUnit${spoilageItemCount}"
+                  name="costPerUnit${spoilageItemCount}"
+                  min="0"
+                  step="0.01"
+                  onchange="updateTotal(${spoilageItemCount})"
+                  required
+                  readonly
+                />
+                <span id="total${spoilageItemCount}"></span>
+              <div>
+                    <label for="imageURL${spoilageItemCount}">Upload Images:</label>
+                    <input
+                      type="file"
+                      id="imageURL${spoilageItemCount}"
+                      name="imageURL${spoilageItemCount}"
+                      accept="image/*"
+                      multiple
+                    />
+                  </div>
 
-             <label for="imageURL${spoilageItemCount}">Image URL:</label>
-        <input type="text" id="imageURL${spoilageItemCount}" name="imageURL${spoilageItemCount}" />
 
-            <button type="button" onclick="deleteSpoilageItem(${spoilageItemCount})">Delete</button>
-          `;
-          spoilageItemsDiv.appendChild(newSpoilageItem);
-        }
+                <button type="button" onclick="deleteSpoilageItem(${spoilageItemCount})">Delete</button>
+              `;
+              spoilageItemsDiv.appendChild(newSpoilageItem);
+            }
 
-        function updateBatches(index) {
-          const productSelect = document.getElementById(`productID${index}`);
-          const batchSelect = document.getElementById(`batchID${index}`);
-          const selectedProductId = productSelect.value;
+            function updateBatches(index) {
+              const productSelect = document.getElementById(`productID${index}`);
+              const batchSelect = document.getElementById(`batchID${index}`);
+              const selectedProductId = productSelect.value;
 
-          // Clear existing options
-          batchSelect.innerHTML = '<option value="">--Please Select Product Batch--</option>';
+              // Clear existing options
+              batchSelect.innerHTML = '<option value="">--Please Select Product Batch--</option>';
 
-          // Add new options based on the selected product
-          const batches = productBatches.filter(batch => batch.productid === parseInt(selectedProductId));
-          batches.forEach(batch => {
-            const option = document.createElement('option');
-            option.value = batch.batchid;
-            option.textContent = `Batch ID: ${batch.batchid}, Current Quantity: ${batch.currentquantity}`;
-            option.dataset.cost = batch.cost;
-            option.dataset.currentQuantity = batch.currentquantity;
-            batchSelect.appendChild(option);
+              // Add new options based on the selected product
+              const batches = productBatches.filter(batch => batch.productid === parseInt(selectedProductId));
+              batches.forEach(batch => {
+                const option = document.createElement('option');
+                option.value = batch.batchid;
+                option.textContent = `Batch ID: ${batch.batchid}, Current Quantity: ${batch.currentquantity}`;
+                option.dataset.cost = batch.cost;
+                option.dataset.currentQuantity = batch.currentquantity;
+                batchSelect.appendChild(option);
+              });
+
+              // Reset cost and quantity
+              document.getElementById(`costPerUnit${index}`).value = '';
+              document.getElementById(`quantitySpoilt${index}`).value = '1';
+              document.getElementById(`quantitySpoilt${index}`).max = '1';
+              updateTotal(index);
+            }
+
+            function updateCost(index) {
+              const batchSelect = document.getElementById(`batchID${index}`);
+              const quantityInput = document.getElementById(`quantitySpoilt${index}`);
+              const costInput = document.getElementById(`costPerUnit${index}`);
+              const selectedOption = batchSelect.options[batchSelect.selectedIndex];
+              const cost = parseFloat(selectedOption.dataset.cost);
+              const currentQuantity = parseInt(selectedOption.dataset.currentQuantity);
+
+              costInput.value = cost.toFixed(2);
+              quantityInput.max = currentQuantity;
+
+              updateTotal(index);
+            }
+
+            function updateTotal(index) {
+              const quantityInput = document.getElementById(`quantitySpoilt${index}`);
+              const costInput = document.getElementById(`costPerUnit${index}`);
+              const totalSpan = document.getElementById(`total${index}`);
+              const quantity = parseInt(quantityInput.value) || 0;
+              const cost = parseFloat(costInput.value) || 0;
+              const total = quantity * cost;
+              totalSpan.textContent = total.toFixed(2);
+              updateFinalTotal();
+            }
+
+            function updateFinalTotal() {
+              let finalTotal = 0;
+              document.querySelectorAll('[id^="total"]').forEach((totalSpan) => {
+                finalTotal += parseFloat(totalSpan.textContent) || 0;
+              });
+              document.getElementById("finalTotal").textContent = finalTotal.toFixed(2);
+            }
+
+            function deleteSpoilageItem(index) {
+              if (index === 1) {
+                alert("The first item cannot be deleted.");
+                return;
+              }
+              const spoilageItem = document.getElementById(`spoilageItemRow${index}`);
+              if (spoilageItem) {
+                spoilageItem.remove();
+                updateFinalTotal();
+              }
+            }
+        document.getElementById("spoilageForm").addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const spoilage = [];
+
+          document.querySelectorAll(".spoilage-item").forEach((item, index) => {
+            const batchSelect = item.querySelector('select[name^="batchID"]');
+            const quantityInput = item.querySelector('input[name^="quantitySpoilt"]');
+            const costInput = item.querySelector('input[name^="costPerUnit"]');
+            const imageUrlInput = item.querySelector('input[name^="imageURL1"]');
+            console.log("This is from console html:", batchSelect.value, quantityInput.value, costInput.value, imageUrlInput.value)
+
+            if (batchSelect && quantityInput && costInput && imageUrlInput) {
+              const batchID = parseInt(batchSelect.value);
+              const quantitySpoilt = parseInt(quantityInput.value);
+              const costPerUnit = parseFloat(costInput.value);
+              const imageURL = imageUrlInput.value;
+
+              spoilage.push({
+                batchID,
+                quantitySpoilt,
+                costPerUnit,
+                imageURL
+              });
+            }
           });
-
-          // Reset cost and quantity
-          document.getElementById(`costPerUnit${index}`).value = '';
-          document.getElementById(`quantitySpoilt${index}`).value = '1';
-          document.getElementById(`quantitySpoilt${index}`).max = '1';
-          updateTotal(index);
-        }
-
-        function updateCost(index) {
-          const batchSelect = document.getElementById(`batchID${index}`);
-          const quantityInput = document.getElementById(`quantitySpoilt${index}`);
-          const costInput = document.getElementById(`costPerUnit${index}`);
-          const selectedOption = batchSelect.options[batchSelect.selectedIndex];
-          const cost = parseFloat(selectedOption.dataset.cost);
-          const currentQuantity = parseInt(selectedOption.dataset.currentQuantity);
-
-          costInput.value = cost.toFixed(2);
-          quantityInput.max = currentQuantity;
-
-          updateTotal(index);
-        }
-
-        function updateTotal(index) {
-          const quantityInput = document.getElementById(`quantitySpoilt${index}`);
-          const costInput = document.getElementById(`costPerUnit${index}`);
-          const totalSpan = document.getElementById(`total${index}`);
-          const quantity = parseInt(quantityInput.value) || 0;
-          const cost = parseFloat(costInput.value) || 0;
-          const total = quantity * cost;
-          totalSpan.textContent = total.toFixed(2);
-          updateFinalTotal();
-        }
-
-        function updateFinalTotal() {
-          let finalTotal = 0;
-          document.querySelectorAll('[id^="total"]').forEach((totalSpan) => {
-            finalTotal += parseFloat(totalSpan.textContent) || 0;
-          });
-          document.getElementById("finalTotal").textContent = finalTotal.toFixed(2);
-        }
-
-        function deleteSpoilageItem(index) {
-          if (index === 1) {
-            alert("The first item cannot be deleted.");
-            return;
-          }
-          const spoilageItem = document.getElementById(`spoilageItemRow${index}`);
-          if (spoilageItem) {
-            spoilageItem.remove();
-            updateFinalTotal();
-          }
-        }
-    document.getElementById("spoilageForm").addEventListener("submit", function (event) {
-      event.preventDefault();
-
-      const spoilage = [];
-
-      document.querySelectorAll(".spoilage-item").forEach((item, index) => {
-        const batchSelect = item.querySelector('select[name^="batchID"]');
-        const quantityInput = item.querySelector('input[name^="quantitySpoilt"]');
-        const costInput = item.querySelector('input[name^="costPerUnit"]');
-        const imageUrlInput = item.querySelector('input[name^="imageURL"]');
-        console.log("This is from console html:", batchSelect.value, quantityInput.value, costInput.value, imageUrlInput.value)
-
-        if (batchSelect && quantityInput && costInput && imageUrlInput) {
-          const batchID = parseInt(batchSelect.value);
-          const quantitySpoilt = parseInt(quantityInput.value);
-          const costPerUnit = parseFloat(costInput.value);
-          const imageURL = imageUrlInput.value;
-
-          spoilage.push({
-            batchID,
-            quantitySpoilt,
-            costPerUnit,
-            imageURL
-          });
-        }
-      });
-          fetch("/spoilages/create", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(spoilage),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log("Spoilage created:", data);
-              window.location.href = "/spoilages"
-              // Redirect or show success message
-            })
-            .catch((error) => {
-              console.error("Error creating spoilage:", error);
-              // Show error message
-            });
-    });
+              fetch("/spoilages/create", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(spoilage),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+      console.log("Spoilage created:", data);
+      setTimeout(() => {
+        window.location.href = "/spoilages";
+      }, 1000); // Delay redirection by 1 second
+    })
+                .catch((error) => {
+                  console.error("Error creating spoilage:", error);
+                  // Show error message
+                });
+        });
   </script>
 </html>

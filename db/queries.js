@@ -79,9 +79,9 @@ exports.getSpecificProduct = async (productid) => {
   const { rows } = await pool.query(`
     SELECT p.*, pb.*, cat.category, c.country
     FROM products p
-    LEFT JOIN productbatches pb ON p.productid = pb.productid
     LEFT JOIN categories cat ON cat.categoryid = p.categoryid
     LEFT JOIN countries c ON c.countryid = p.countryid
+    LEFT JOIN productbatches pb ON p.productid = pb.productid
     WHERE p.productid = ${productid}
   `);
   return rows;
@@ -102,7 +102,6 @@ exports.createSale = async (saleData) => {
     await client.query("BEGIN");
 
     const { totalAmount, paymentMethod, saleItems } = saleData;
-
     const saleResult = await client.query(
       `INSERT INTO sales (totalAmount, paymentMethod)
        VALUES ($1, $2)
@@ -323,7 +322,6 @@ exports.checkProductName = async (product) => {
     WHERE name = $1`,
     [product.name]
   );
-
   return rows;
 };
 
@@ -413,7 +411,7 @@ exports.deleteProduct = async (id) => {
       AND NOT EXISTS (
       SELECT 1 FROM productBatches
       WHERE batchID = $1)
-      RETURNING 1
+      RETURNING 1 as result
       `,
       [id]
     );

@@ -14,7 +14,7 @@
                 <option value="">--Please Select Product --</option>
                 <% data.forEach((prod)=>{ if(prod.status==="ACTIVE"){%>
                 <option
-                  value="<%=prod.productid%>"
+                  value="<%=prod.batchid%>"
                   data-cost="<%=prod.cost%>"
                   data-msrp="<%=prod.msrp%>"
                 >
@@ -195,6 +195,7 @@
 
           if (saleItemSelect && priceInput && quantityInput) {
             const batchID = parseInt(saleItemSelect.value);
+            console.log(batchID);
             const pricePerUnit = parseFloat(priceInput.value);
             const quantitySold = parseInt(quantityInput.value);
 

@@ -49,16 +49,6 @@
           <input type="text" id="size" name="size" required />
         </div>
         <div>
-          <label for="images">Upload Images:</label>
-          <input
-            type="file"
-            id="images"
-            name="images"
-            accept="image/*"
-            multiple
-          />
-        </div>
-        <div>
           <label for="description">Description:</label>
           <textarea id="description" name="description"></textarea>
         </div>
@@ -122,8 +112,14 @@
             <input type="number" id="quantityIn" name="quantityIn" min="1" />
           </div>
           <div>
-            <label for="imageURL">Image URL:</label>
-            <input type="url" id="imageURL" name="imageURL" />
+            <label for="images">Upload Images:</label>
+            <input
+              type="file"
+              id="images"
+              name="images"
+              accept="image/*"
+              multiple
+            />
           </div>
         </div>
         <button type="submit">Create Product</button>
@@ -191,17 +187,8 @@
         try {
           const response = await fetch(
             `/products/check-name?name=${encodeURIComponent(name)}`
-          )
-            .then((res) => res.json())
-            .then((data) => {
-              console.log("Product created!");
-            })
-            .catch((err) => {
-              console.error("Error creating supplier: ", err);
-              document.getElementById("errorMessage").textContent =
-                err.message || "An error occurred while creating the supplier";
-            });
-
+          );
+          const data = await response.json();
           if (data.exists) {
             alert(
               `The name "${name}" already exists with size(s): ${data.sizes.join(
@@ -260,10 +247,31 @@
           batchInfo.style.display = "none";
         }
       });
+      document
+        .getElementById("productForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault(); // Prevent the default form submission
 
-      document.getElementById("productForm").addEventListener("submit", () => {
-        window.location.href = "/";
-      });
+          const formData = new FormData(this);
+
+          try {
+            const response = await fetch("/products/create", {
+              method: "POST",
+              body: new URLSearchParams(formData),
+            });
+
+            if (response.ok) {
+              window.location.href = "/"; // Redirect after successful submission
+            } else {
+              const errorData = await response.json();
+              console.error("Submission error:", errorData);
+              // Handle error (e.g., display error message to user)
+            }
+          } catch (error) {
+            console.error("Fetch error:", error);
+            // Handle network errors
+          }
+        });
     </script>
   </body>
 </html>

@@ -79,11 +79,12 @@
       })
       .then(response => {
         response.json()
+        console.log(response.status)
         if (response.status === 204) {
-          document.getElementById('deleteMessage').textContent = "Delete category successful";
+          document.getElementById('deleteMessage').textContent = "Delete product successful";
           window.location.reload();
         } else {
-          document.getElementById('deleteMessage').textContent = "Delete category unsuccessful";
+          document.getElementById('deleteMessage').textContent = "Delete product unsuccessful";
         }
       })
       .catch(error => {

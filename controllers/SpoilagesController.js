@@ -46,6 +46,7 @@ exports.CreateSpoilagesPost = asyncHandler(async (req, res, next) => {
     const spoilageData = req.body;
     try {
       const newSpoilage = await db.createSpoilage(spoilageData);
+      res.json(newSpoilage);
     } catch (error) {
       next(error);
     }
