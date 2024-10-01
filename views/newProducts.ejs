@@ -163,11 +163,9 @@
       const updateSuppliers = async () => {
         try {
           const response = await fetch("/suppliers/list");
-          console.log("From html response", response);
           const suppliers = await response.json();
           const supplierSelect = document.getElementById("supplierID");
           supplierSelect.innerHTML = "";
-          console.log(suppliers);
           suppliers.forEach((supplier) => {
             const option = document.createElement("option");
             option.value = supplier.supplierid;

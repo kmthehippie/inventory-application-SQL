@@ -60,7 +60,6 @@
       })
       .then(response => 
       {response.json()
-      console.log(response)
       if (response.status === 204) {
           document.getElementById('deleteMessage').textContent = "Delete category successful";
           window.location.reload();
@@ -79,7 +78,6 @@
       })
       .then(response => {
         response.json()
-        console.log(response.status)
         if (response.status === 204) {
           document.getElementById('deleteMessage').textContent = "Delete product successful";
           window.location.reload();

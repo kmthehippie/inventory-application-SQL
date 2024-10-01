@@ -10,13 +10,18 @@
           <div id="saleItems">
             <div class="sale-item" id="saleItemRow1">
               <label for="saleitem1">Fruit:</label>
-              <select name="saleitem1" id="saleitem1" onchange="updatePrice(1)">
+              <select
+                name="saleitem1"
+                id="saleitem1"
+                onchange="updatePrice(1); updateQuantity(this.options[this.selectedIndex].dataset.quantity, 1)"
+              >
                 <option value="">--Please Select Product --</option>
-                <% data.forEach((prod)=>{ if(prod.status==="ACTIVE"){%>
+                <% data.forEach((prod)=>{ if(prod.status==="ACTIVE"){ %>
                 <option
                   value="<%=prod.batchid%>"
                   data-cost="<%=prod.cost%>"
                   data-msrp="<%=prod.msrp%>"
+                  data-quantity="<%=prod.currentquantity%>"
                 >
                   Batch:<%=prod.batchid%> <%=prod.name%> <%=prod.size%>
                 </option>
@@ -32,7 +37,10 @@
                 onchange="updateTotal(1)"
                 required
               />
-              <label for="quantity1">Quantity:</label>
+              <div id="available" style="display: none; color: blue">
+                Available:
+              </div>
+              <label for="quantity1">Quantity: </label>
               <input
                 type="number"
                 id="quantity1"
@@ -147,7 +155,8 @@
         saleItemSelect.options[saleItemSelect.selectedIndex];
       const cost = parseFloat(selectedOption.dataset.cost);
       const msrp = parseFloat(selectedOption.dataset.msrp);
-      priceInput.min = cost;
+      const quantity = parseFloat(selectedOption.dataset.quantity);
+      priceInput.min = (cost / quantity).toFixed(2);
       priceInput.value = msrp;
       updateTotal(index);
     }
@@ -171,6 +180,11 @@
       document.getElementById("finalTotal").textContent = finalTotal.toFixed(2);
     }
 
+    function updateQuantity(qtt) {
+      const available = document.getElementById("available");
+      available.textContent = "Available Quantity: " + qtt;
+      available.style = "display: block";
+    }
     document
       .getElementById("saleForm")
       .addEventListener("submit", function (event) {
@@ -195,7 +209,6 @@
 
           if (saleItemSelect && priceInput && quantityInput) {
             const batchID = parseInt(saleItemSelect.value);
-            console.log(batchID);
             const pricePerUnit = parseFloat(priceInput.value);
             const quantitySold = parseInt(quantityInput.value);
 
@@ -212,7 +225,6 @@
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log("Sale created:", data);
             window.location.href = "/sales";
           })
           .catch((error) => {

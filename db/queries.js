@@ -286,6 +286,7 @@ exports.createProduct = async (p) => {
     );
     const productID = productResult.rows[0].productid;
     let batchResult;
+
     if (p.status === "IN_STOCK") {
       batchResult = await client.query(
         `INSERT INTO productbatches (productID, cost, msrp, quantityIn, currentQuantity, imageURL) VALUES ($1, $2, $3, $4, $5, $6)
@@ -293,7 +294,7 @@ exports.createProduct = async (p) => {
         [
           productID,
           p.cost,
-          p.cost * 1.1,
+          (p.cost * 1.15) / p.quantityIn.toFixed(2),
           p.quantityIn,
           p.quantityIn,
           p.imageURL,

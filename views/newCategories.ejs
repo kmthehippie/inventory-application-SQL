@@ -39,7 +39,6 @@
               if (data.error) {
                 throw new Error(data.error);
               }
-              console.log("Category created: ", data);
               document.getElementById("category").value = "";
               document.getElementById("errorMessage").textContent = "";
               alert("Category added successfully!");
