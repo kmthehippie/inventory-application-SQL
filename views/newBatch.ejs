@@ -23,6 +23,19 @@
               <% }); %>
             </select>
           </div>
+          <div id="notice" style="display: none; color: red">
+            Please fill in the Quantity In.
+          </div>
+          <div>
+            <label for="quantityIn">Quantity In (In pcs or kg):</label>
+            <input
+              type="number"
+              id="quantityIn"
+              name="quantityIn"
+              onchange="updateMSRP()"
+              required
+            />
+          </div>
           <div>
             <label for="cost">Cost:</label>
             <input
@@ -37,11 +50,7 @@
             <label for="msrp"
               >MSRP: <small>Manufacturer Suggested Retail Price</small></label
             >
-            <input type="number" id="msrp" name="msrp" required />
-          </div>
-          <div>
-            <label for="quantityIn">Quantity In:</label>
-            <input type="number" id="quantityIn" name="quantityIn" required />
+            <input step="any" type="number" id="msrp" name="msrp" required />
           </div>
           <div>
             <label for="images">Upload Images:</label>
@@ -60,8 +69,17 @@
     <script>
       let cost = document.getElementById("cost");
       let msrp = document.getElementById("msrp");
+      let quantityIn = document.getElementById("quantityIn");
+      const noticeDiv = document.getElementById("notice");
       const updateMSRP = () => {
-        msrp.value = (Number(cost.value) * 1.1).toFixed(2);
+        if (!quantityIn.value && cost.value) {
+          noticeDiv.style.display = "block";
+        } else if (quantityIn.value && cost.value) {
+          noticeDiv.style.display = "none";
+          msrp.value = ((Number(cost.value) * 1.15) / quantityIn.value).toFixed(
+            2
+          );
+        }
       };
     </script>
   </body>
