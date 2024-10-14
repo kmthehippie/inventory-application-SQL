@@ -59,7 +59,7 @@
                   <option value="CANCELLED" <%= sale.status === 'CANCELLED' ? 'selected' : '' %>>Cancelled</option>
                   <option value="REFUNDED" <%= sale.status === 'REFUNDED' ? 'selected' : '' %>>Refunded</option>
                 </select>
-                <button type="submit">Update Status</button>
+                <button type="submit" class="update-sale">Update Status</button>
               </form>
             </td>
           </tr>
@@ -70,6 +70,39 @@
     </div>
   </body>
   <script>
+ document.addEventListener('DOMContentLoaded', function() {
+  const forms = document.querySelectorAll('form[action^="/sales/update/"]');
+  
+  forms.forEach(form => {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const saleId = form.action.split('/').pop();
+      const statusSelect = form.querySelector('select[name="status"]');
+      const newStatus = statusSelect.value;
+      
+      try {
+        // Update sale and sale items status
+        const response = await fetch(`/sales/update/${saleId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({saleId, newStatus})
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update status');
+        } else {
+          window.location.reload()
+        }
+      } catch (error) {
+        console.error('Error updating status:', error);
+        alert('An error occurred while updating the status');
+      }
+    });
+  });
+});
     // document.adEl when click update status and it is not completed, we need to update sale items status, sale status, create new inventory transactions with the status included. WE NEED CALL FETCH to sales/update/:saleid -> saleitems with this saleid -> update the status all to returned or cancelled. -> create new inv transaction to add back these items into our inv
   </script>
 </html>

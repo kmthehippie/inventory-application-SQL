@@ -64,3 +64,15 @@ exports.CreateSalesPost = [
     }
   }),
 ];
+
+exports.UpdateSalesStatus = asyncHandler(async (req, res, next) => {
+  const saleId = req.body.saleId;
+  const newStatus = req.body.newStatus;
+
+  try {
+    const updateSale = await db.updateSaleStatus(saleId, newStatus);
+    res.json(updateSale);
+  } catch (err) {
+    next(err);
+  }
+});

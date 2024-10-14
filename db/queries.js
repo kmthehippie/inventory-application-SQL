@@ -474,3 +474,20 @@ exports.getProductImages = async (productId) => {
   );
   return rows;
 };
+
+exports.updateSaleStatus = async (saleId, status) => {
+  console.log("Sale status: ", saleId, status);
+  const query1 = "UPDATE sales SET status = $1 WHERE saleID = $2 RETURNING *";
+  const query2 =
+    "UPDATE saleItems SET status = $1 WHERE saleID = $2 RETURNING *";
+  const values = [status, saleId];
+
+  try {
+    const result1 = await pool.query(query1, values);
+    const result2 = await pool.query(query2, values);
+    return result1.rows[0], result2.rows[0];
+  } catch (error) {
+    console.error("Error in updateSupplier:", error);
+    throw error;
+  }
+};
